@@ -18,6 +18,7 @@ const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 
 const brushSize = ref(SIZES[1].w)
 const brushOpacity = ref(1)
 const erasing = ref(false)
+const bucket = ref(false)
 const smoothing = ref(true)
 
 let mainCtx: CanvasRenderingContext2D | null = null
@@ -47,6 +48,40 @@ function getSvgPath(pts: number[][]): string {
 function ratioH(w: number, ratio: string): number {
   const [a, b] = ratio.split('/').map(Number)
   return b ? Math.round(w * b / a) : w
+}
+
+function floodFill(ctx: CanvasRenderingContext2D, cssX: number, cssY: number, hex: string, opacity: number, dpr: number) {
+  const canvas = ctx.canvas
+  const px = Math.round(cssX * dpr)
+  const py = Math.round(cssY * dpr)
+  if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) return
+  const W = canvas.width, H = canvas.height
+  const imageData = ctx.getImageData(0, 0, W, H)
+  const d = imageData.data
+  const si = (py * W + px) * 4
+  const [tr, tg, tb, ta] = [d[si], d[si + 1], d[si + 2], d[si + 3]]
+  const fr = parseInt(hex.slice(1, 3), 16)
+  const fg = parseInt(hex.slice(3, 5), 16)
+  const fb = parseInt(hex.slice(5, 7), 16)
+  const fa = Math.round(opacity * 255)
+  if (tr === fr && tg === fg && tb === fb && ta === fa) return
+  const tol = 32
+  const visited = new Uint8Array(W * H)
+  const stack: number[] = [px + py * W]
+  while (stack.length) {
+    const i = stack.pop()!
+    if (visited[i]) continue
+    const pi = i * 4
+    if (Math.abs(d[pi] - tr) + Math.abs(d[pi + 1] - tg) + Math.abs(d[pi + 2] - tb) + Math.abs(d[pi + 3] - ta) > tol) continue
+    visited[i] = 1
+    d[pi] = fr; d[pi + 1] = fg; d[pi + 2] = fb; d[pi + 3] = fa
+    const x = i % W, y = (i / W) | 0
+    if (x > 0) stack.push(i - 1)
+    if (x < W - 1) stack.push(i + 1)
+    if (y > 0) stack.push(i - W)
+    if (y < H - 1) stack.push(i + W)
+  }
+  ctx.putImageData(imageData, 0, 0)
 }
 
 function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null, forceH?: number) {
@@ -109,8 +144,15 @@ function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null,
   }
 
   const onDown = (e: PointerEvent) => {
-    down = true
     const p = pos(e)
+    if (bucket.value) {
+      restore()
+      floodFill(ctx, p.x, p.y, brushColor.value, brushOpacity.value, dpr)
+      commit()
+      drew = true; e.preventDefault()
+      return
+    }
+    down = true
     pts = [[p.x, p.y, e.pressure || 0.5]]
     try { c.setPointerCapture(e.pointerId) } catch {}
     restore(); drawStroke(pts)
@@ -281,7 +323,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         <button
           v-for="color in PALETTE" :key="color"
           type="button"
-          @click="brushColor = color; erasing = false"
+          @click="brushColor = color; erasing = false; bucket = false"
           :aria-label="`draw in ${color}`"
           :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
         ></button>
@@ -290,7 +332,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           <input
             type="color"
             :value="brushColor"
-            @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
+            @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false; bucket = false }"
             aria-label="pick custom color"
             style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; padding:0; border-radius:50%;"
           >
@@ -326,12 +368,24 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         <!-- eraser -->
         <button
           type="button"
-          @click="erasing = !erasing"
+          @click="erasing = !erasing; bucket = false"
           aria-label="eraser"
           :style="`width:26px; height:22px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
             <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>
+          </svg>
+        </button>
+
+        <!-- bucket fill -->
+        <button
+          type="button"
+          @click="bucket = !bucket; erasing = false"
+          aria-label="bucket fill"
+          :style="`width:26px; height:22px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:6px; border:2px solid var(--line-ink); background:${bucket ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${bucket ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+            <path d="m19 11-8-8-8.5 8.5a5.5 5.5 0 0 0 7.78 7.78L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>
           </svg>
         </button>
 
@@ -366,7 +420,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
               <button
                 v-for="color in PALETTE" :key="color"
                 type="button"
-                @click="brushColor = color; erasing = false"
+                @click="brushColor = color; erasing = false; bucket = false"
                 :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
               ></button>
               <!-- custom color -->
@@ -374,7 +428,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
                 <input
                   type="color"
                   :value="brushColor"
-                  @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
+                  @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false; bucket = false }"
                   aria-label="pick custom color"
                   style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; padding:0; border-radius:50%;"
                 >
@@ -409,12 +463,24 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
               <!-- eraser -->
               <button
                 type="button"
-                @click="erasing = !erasing"
+                @click="erasing = !erasing; bucket = false"
                 aria-label="eraser"
                 :style="`width:26px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
                   <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>
+                </svg>
+              </button>
+
+              <!-- bucket fill -->
+              <button
+                type="button"
+                @click="bucket = !bucket; erasing = false"
+                aria-label="bucket fill"
+                :style="`width:26px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${bucket ? '#FFF8EE' : 'transparent'}; color:${bucket ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+                  <path d="m19 11-8-8-8.5 8.5a5.5 5.5 0 0 0 7.78 7.78L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>
                 </svg>
               </button>
 
