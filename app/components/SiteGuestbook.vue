@@ -19,6 +19,7 @@ const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 
 const brushSize = ref(SIZES[1].w)
 const brushOpacity = ref(1)
 const erasing = ref(false)
+const smoothing = ref(true)
 
 let mainCtx: CanvasRenderingContext2D | null = null
 let mainOff: HTMLCanvasElement | null = null
@@ -95,8 +96,8 @@ function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null,
     const stroke = getStroke(points, {
       size: brushSize.value,
       thinning: erasing.value ? 0 : 0.5,
-      smoothing: 0.5,
-      streamline: 0.5,
+      smoothing: smoothing.value ? 0.5 : 0,
+      streamline: smoothing.value ? 0.5 : 0,
     })
     if (!stroke.length) return
     const path = new Path2D(getSvgPath(stroke))
@@ -361,6 +362,14 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           </svg>
         </button>
 
+        <!-- smoothing -->
+        <button
+          type="button"
+          @click="smoothing = !smoothing"
+          aria-label="toggle smoothing"
+          :style="`min-width:36px; height:22px; padding:0 8px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:6px; border:2px solid var(--line-ink); background:${smoothing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${smoothing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >~</button>
+
         <!-- clear -->
         <button
           type="button"
@@ -435,6 +444,14 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
                   <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>
                 </svg>
               </button>
+
+              <!-- smoothing -->
+              <button
+                type="button"
+                @click="smoothing = !smoothing"
+                aria-label="toggle smoothing"
+                :style="`min-width:36px; height:24px; padding:0 8px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${smoothing ? '#FFF8EE' : 'transparent'}; color:${smoothing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+              >~</button>
 
               <!-- clear -->
               <button
