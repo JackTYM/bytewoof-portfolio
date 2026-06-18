@@ -8,11 +8,11 @@ const msg = ref('')
 const pending = ref(false)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
-const colorInputRef = ref<HTMLInputElement | null>(null)
-const overlayColorInputRef = ref<HTMLInputElement | null>(null)
 const zoomed = ref(false)
 let drew = false
 
+const CANVAS_RATIOS = [{ label: '1:1', value: '1' }, { label: '4:3', value: '4/3' }, { label: '16:9', value: '16/9' }]
+const canvasRatio = ref('1')
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
 const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
@@ -213,6 +213,24 @@ async function signGuest(e: Event) {
   } catch {}
 }
 
+watch(canvasRatio, () => {
+  nextTick(() => {
+    if (mainCleanup) { mainCleanup(); mainCleanup = null }
+    const c = canvasRef.value
+    if (!c) return
+    // preserve existing drawing
+    const snapshot = mainCtx ? c.toDataURL() : null
+    const result = setupDrawing(c)
+    if (!result) return
+    mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
+    if (snapshot && drew) {
+      const img = new Image()
+      img.onload = () => { mainCtx!.drawImage(img, 0, 0, c.offsetWidth, c.offsetHeight) }
+      img.src = snapshot
+    }
+  })
+})
+
 onMounted(() => { loadEntries(); initDoodle() })
 onUnmounted(() => { if (mainCleanup) mainCleanup() })
 </script>
@@ -251,7 +269,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         <canvas
           ref="canvasRef"
           aria-label="draw an optional doodle"
-          style="width:100%; aspect-ratio:1; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;"
+          :style="`width:100%; aspect-ratio:${canvasRatio}; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;`"
         ></canvas>
         <button
           type="button"
@@ -268,6 +286,16 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
 
       <!-- toolbar -->
       <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
+        <!-- canvas ratio -->
+        <button
+          v-for="r in CANVAS_RATIOS" :key="r.label"
+          type="button"
+          @click="canvasRatio = r.value"
+          :style="`min-width:30px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:6px; border:2px solid var(--line-ink); background:${canvasRatio === r.value ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${canvasRatio === r.value ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >{{ r.label }}</button>
+
+        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+
         <!-- palette swatches -->
         <button
           v-for="color in PALETTE" :key="color"
@@ -278,19 +306,17 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         ></button>
         <!-- custom color picker swatch -->
         <div style="position:relative; width:20px; height:20px; flex:none;">
-          <button
-            type="button"
-            @click="colorInputRef?.click()"
-            aria-label="pick custom color"
-            :style="`width:20px; height:20px; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; cursor:pointer; border:2px solid var(--line-soft); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
-          ></button>
           <input
-            ref="colorInputRef"
             type="color"
             :value="brushColor"
             @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
-            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;" tabindex="-1"
+            aria-label="pick custom color"
+            style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; padding:0; border-radius:50%;"
           >
+          <span
+            aria-hidden="true"
+            :style="`position:absolute; inset:0; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; border:2px solid var(--line-soft); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px; pointer-events:none;`"
+          ></span>
         </div>
 
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
@@ -320,8 +346,12 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           type="button"
           @click="erasing = !erasing"
           aria-label="eraser"
-          :style="`min-width:26px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
-        >⌫</button>
+          :style="`width:26px; height:22px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+            <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>
+          </svg>
+        </button>
 
         <!-- clear -->
         <button
@@ -351,18 +381,17 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
               ></button>
               <!-- custom color -->
               <div style="position:relative; width:22px; height:22px; flex:none;">
-                <button
-                  type="button"
-                  @click="overlayColorInputRef?.click()"
-                  :style="`width:22px; height:22px; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; cursor:pointer; border:2px solid rgba(255,255,255,.3); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
-                ></button>
                 <input
-                  ref="overlayColorInputRef"
                   type="color"
                   :value="brushColor"
                   @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
-                  style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;" tabindex="-1"
+                  aria-label="pick custom color"
+                  style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; padding:0; border-radius:50%;"
                 >
+                <span
+                  aria-hidden="true"
+                  :style="`position:absolute; inset:0; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; border:2px solid rgba(255,255,255,.3); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px; pointer-events:none;`"
+                ></span>
               </div>
 
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
@@ -391,8 +420,13 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
               <button
                 type="button"
                 @click="erasing = !erasing"
-                :style="`min-width:26px; height:24px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
-              >⌫</button>
+                aria-label="eraser"
+                :style="`width:26px; height:24px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px">
+                  <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>
+                </svg>
+              </button>
 
               <!-- clear -->
               <button
@@ -413,7 +447,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           <canvas
             ref="overlayCanvasRef"
             aria-label="full-screen drawing canvas"
-            style="display:block; width:100%; flex:1; min-height:0; aspect-ratio:1; max-width:calc(100vh - 100px); margin:0 auto; border:2.5px dashed rgba(255,255,255,.2); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;"
+            style="display:block; width:min(100%,calc(100vh - 140px)); aspect-ratio:1; align-self:center; flex:none; border:2.5px dashed rgba(255,255,255,.2); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;"
           ></canvas>
         </div>
       </Teleport>
@@ -440,7 +474,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           v-if="entry.doodle"
           :src="entry.doodle"
           :alt="`doodle by ${entry.name}`"
-          style="width:100%; border:2px solid var(--line-ink); border-radius:10px; background:#FFF8EE; display:block;"
+          style="width:100%; height:auto; border:2px solid var(--line-ink); border-radius:10px; background:#FFF8EE; display:block;"
         >
       </div>
     </div>
