@@ -102,65 +102,90 @@ export const PROJECTS: Project[] = [
 ]
 
 // --------------- GALLERY ---------------
+const R2 = 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery'
+
+export interface GalleryAlt { src: string; nsfw?: boolean }
+
 export interface GalleryItem {
   slug: string
-  /** path relative to public/, e.g. '/gallery/byte-bust.webp' */
   src: string
+  alts?: GalleryAlt[]
   title: string
-  desc: string
   credit: string
-  creditUrl: string // TODO: real value — artist profile / YCH link
+  creditUrl: string
+  creditNsfw?: boolean  // artist account contains 18+ content
   nsfw?: boolean
 }
 
 export const GALLERY: GalleryItem[] = [
   {
     slug: 'byte-bust',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-bust.webp',
+    src: `${R2}/byte-bust.webp`,
     title: 'bust',
-    desc: 'a clean bust commission.',
-    credit: 'artist — add handle', // TODO: real value
-    creditUrl: '#', // TODO: real value
-  },
-  {
-    slug: 'byte-icon',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-icon.webp',
-    title: 'happy icon',
-    desc: 'round chibi icon commission.',
-    credit: 'artist — add handle', // TODO: real value
-    creditUrl: '#', // TODO: real value
+    credit: 'Noah',
+    creditUrl: 'https://x.com/birdieboylover',
+    creditNsfw: true,
   },
   {
     slug: 'byte-lick',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-lick.webp',
-    title: 'blep / lick',
-    desc: 'a big ol\' blep.',
-    credit: 'artist — add handle', // TODO: real value
-    creditUrl: '#', // TODO: real value
-  },
-  {
-    slug: 'byte-puppified',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-puppified.webp',
-    title: 'puppified',
-    desc: 'full pup mode.',
-    credit: 'artist — add handle', // TODO: real value
-    creditUrl: '#', // TODO: real value
-  },
-  {
-    slug: 'byte-hug',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-hug.webp',
-    title: 'cozy hug',
-    desc: 'boyfriend hug commission — velvetbun · 2022.',
-    credit: 'velvetbun', // TODO: real value — add handle
-    creditUrl: '#', // TODO: real value
+    src: `${R2}/byte-lick.webp`,
+    title: 'blep',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/birdieboylover',
+    creditNsfw: true,
   },
   {
     slug: 'byte-refsheet',
-    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-refsheet.webp',
+    src: `${R2}/byte-refsheet.webp`,
     title: 'ref sheet',
-    desc: 'the official reference sheet.',
-    credit: 'artist — add handle', // TODO: real value
-    creditUrl: '#', // TODO: real value
+    credit: 'Noah',
+    creditUrl: 'https://x.com/birdieboylover',
+    creditNsfw: true,
+  },
+  {
+    slug: 'byte-puppified',
+    src: `${R2}/byte-puppified.webp`,
+    title: 'puppified',
+    credit: '14pup',
+    creditUrl: 'https://x.com/14pup_',
+  },
+  {
+    slug: 'byte-icon',
+    src: `${R2}/byte-icon.webp`,
+    title: 'love emoticon',
+    credit: 'zanky',
+    creditUrl: 'https://x.com/zankydoggy',
+  },
+  {
+    slug: 'byte-hug',
+    src: `${R2}/byte-hug.webp`,
+    title: 'hug',
+    credit: 'velvetbun',
+    creditUrl: 'https://x.com/Velvetbun16',
+  },
+  {
+    slug: 'byte-bellyrub',
+    src: `${R2}/byte-bellyrub.webp`,
+    title: 'belly rub',
+    credit: 'kiro',
+    creditUrl: 'https://x.com/fenneckiro',
+    alts: [{ src: `${R2}/byte-bellyrub-nsfw.webp`, nsfw: true }],
+  },
+  {
+    slug: 'byte-footjob',
+    src: `${R2}/byte-footjob-1.webp`,
+    title: 'footjob ych',
+    credit: 'zanky',
+    creditUrl: 'https://x.com/zankydoggy',
+    nsfw: true,
+    alts: [
+      { src: `${R2}/byte-footjob-2.webp` },
+      { src: `${R2}/byte-footjob-3.webp` },
+      { src: `${R2}/byte-footjob-4.webp` },
+      { src: `${R2}/byte-footjob-5.webp` },
+      { src: `${R2}/byte-footjob-6.webp` },
+      { src: `${R2}/byte-footjob-7.webp` },
+    ],
   },
 ]
 
