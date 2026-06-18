@@ -9,7 +9,7 @@ onMounted(() => {
 })
 
 useHead({
-  title: 'byte — wolfdog software engineer & night-owl developer',
+  title: 'byte - wolfdog software engineer & night-owl developer',
   link: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
   meta: [
     { name: 'description', content: 'byte is a wolfdog software engineer who builds things and stays up too late. portfolio, gallery, guestbook, and more — come say hi.' },
