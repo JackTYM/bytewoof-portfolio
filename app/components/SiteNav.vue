@@ -20,8 +20,9 @@ const isDark = computed(() => theme.value === 'dark')
         <a href="#about"   style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">about</a>
         <a href="#work"    style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">work</a>
         <a href="#gallery" style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">art</a>
-        <a href="#cons"    style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">cons</a>
-        <a href="#links"   style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">links</a>
+        <a href="#cons"     style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">cons</a>
+        <a href="#terminal" style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">nerdy</a>
+        <a href="#links"    style="font-family:var(--font-body); font-weight:800; font-size:14.5px; color:var(--text-body); text-decoration:none; padding:8px 12px; border-radius:999px;">links</a>
       </div>
 
       <!-- controls -->

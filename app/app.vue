@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { theme, init: initTheme } = useTheme()
 const { motionOn, init: initMotion } = useMotion()
-const { scrollTo } = useScrollSpy(['home', 'about', 'work', 'gallery', 'cons', 'links', 'terminal'])
+const { scrollTo } = useScrollSpy(['home', 'about', 'work', 'gallery', 'cons', 'terminal', 'links'])
 
 onMounted(() => {
   initTheme()
@@ -32,8 +32,8 @@ useHead({
       <SiteWork />
       <SiteGallery />
       <SiteCons />
-      <SiteLinks />
       <SiteTerminal />
+      <SiteLinks />
     </main>
     <SiteFooter />
     <PawTrail />
