@@ -102,7 +102,7 @@ export const PROJECTS: Project[] = [
 ]
 
 // --------------- GALLERY ---------------
-const R2 = 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery'
+const R2 = 'https://cdn.bytewoof.dog/gallery'
 
 export interface GalleryAlt { src: string; nsfw?: boolean }
 
