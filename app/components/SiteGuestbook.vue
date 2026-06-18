@@ -14,7 +14,8 @@ let drew = false
 const canvasRatio = '4/3'
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
-const brushSize = ref(10)
+const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
+const brushSize = ref(SIZES[1].w)
 const brushOpacity = ref(1)
 const erasing = ref(false)
 const smoothing = ref(true)
@@ -302,6 +303,16 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
 
       <!-- toolbar row 2: tools -->
       <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
+        <!-- size -->
+        <button
+          v-for="sz in SIZES" :key="sz.label"
+          type="button"
+          @click="brushSize = sz.w"
+          :style="`min-width:26px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${brushSize === sz.w ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >{{ sz.label }}</button>
+
+        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+
         <!-- opacity -->
         <input
           type="range" min="0.05" max="1" step="0.05"
@@ -344,7 +355,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
       <Teleport to="body">
         <div
           v-if="zoomed"
-          style="position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; background:color-mix(in srgb, var(--ink-950) 92%, transparent); backdrop-filter:blur(4px); padding:16px;"
+          style="position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; background:color-mix(in srgb, var(--ink-950) 92%, transparent); backdrop-filter:blur(4px); padding:16px; padding-right:64px;"
           @keydown.esc="closeZoom"
         >
           <!-- overlay toolbar -->
@@ -372,6 +383,16 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
                   :style="`position:absolute; inset:0; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; border:2px solid rgba(255,255,255,.3); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px; pointer-events:none;`"
                 ></span>
               </div>
+
+              <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
+
+              <!-- size -->
+              <button
+                v-for="sz in SIZES" :key="sz.label"
+                type="button"
+                @click="brushSize = sz.w"
+                :style="`min-width:26px; height:24px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${brushSize === sz.w ? '#FFF8EE' : 'transparent'}; color:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+              >{{ sz.label }}</button>
 
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
 
@@ -412,14 +433,16 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
                 style="min-width:36px; height:24px; padding:0 8px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border:2px solid rgba(255,255,255,.3); border-radius:7px; background:transparent; color:var(--cream-100);"
               >clr</button>
 
-              <!-- done -->
-              <button
-                type="button"
-                @click="closeZoom"
-                style="padding:5px 16px; cursor:pointer; font-family:var(--font-body); font-weight:800; font-size:13px; color:#5A1F30; border:2.5px solid var(--line-ink); border-radius:10px; background:var(--blush-500); box-shadow:2px 2px 0 var(--line-ink);"
-              >done ✓</button>
             </div>
           </div>
+
+          <!-- always-visible close button — anchored to top-right so it's reachable on mobile even if toolbar wraps -->
+          <button
+            type="button"
+            @click="closeZoom"
+            aria-label="close fullscreen canvas"
+            style="position:absolute; top:12px; right:12px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:var(--font-body); font-weight:800; font-size:18px; color:#5A1F30; border:2.5px solid var(--line-ink); border-radius:12px; background:var(--blush-500); box-shadow:2px 2px 0 var(--line-ink); z-index:1;"
+          >✓</button>
 
           <canvas
             ref="overlayCanvasRef"
