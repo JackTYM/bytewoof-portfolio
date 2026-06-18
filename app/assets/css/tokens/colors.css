@@ -1,0 +1,81 @@
+/* Byte — Color tokens */
+:root {
+  --byte-brown:        #6E4A34;
+  --byte-brown-dark:   #432C1F;
+  --byte-cream:        #F0DCC4;
+  --byte-blue:         #4CB3E6;
+  --byte-blue-light:   #8FD4F5;
+  --byte-blush:        #E89BB0;
+  --byte-green:        #6FC36A;
+  --byte-ink:          #000000;
+
+  --cream-50:   #FBF5EC;
+  --cream-100:  #F6ECDC;
+  --cream-200:  #F0DCC4;
+  --cream-300:  #E4CCB0;
+  --sand-400:   #CBAE90;
+  --taupe-500:  #A98B70;
+  --bark-600:   #8A5E42;
+  --bark-700:   #6E4A34;
+  --bark-800:   #533524;
+  --bark-900:   #432C1F;
+  --ink-950:    #271912;
+
+  --blue-300:   #B6E3FA;
+  --blue-400:   #8FD4F5;
+  --blue-500:   #4CB3E6;
+  --blue-600:   #2E9AD4;
+  --blue-700:   #2280B6;
+
+  --blush-300:  #F4C5D2;
+  --blush-500:  #E89BB0;
+  --blush-600:  #D87A95;
+
+  --green-400:  #9AD897;
+  --green-500:  #6FC36A;
+  --green-600:  #4E9E49;
+
+  --amber-500:  #E0A458;
+  --rose-500:   #DC6F66;
+
+  --dusk-deep:   #322046;
+  --dusk-mid:    #5C3E6E;
+  --dusk-warm:   #9C5C82;
+  --dusk-glow:   #D98FA6;
+  --dusk-gradient: linear-gradient(170deg, #322046 0%, #5C3E6E 42%, #9C5C82 74%, #D98FA6 100%);
+  --cream-veil:  rgba(240, 220, 196, 0.10);
+
+  --surface-page:    var(--cream-50);
+  --surface-card:    #FFFCF6;
+  --surface-sunken:  var(--cream-100);
+  --surface-raised:  #FFFFFF;
+  --surface-inverse: var(--ink-950);
+  --surface-dusk:    var(--dusk-gradient);
+
+  --text-strong:    var(--ink-950);
+  --text-body:      #4A3526;
+  --text-muted:     #8A7461;
+  --text-faint:     #B09A85;
+  --text-on-dark:   var(--cream-100);
+  --text-on-accent: #06283A;
+  --text-link:      var(--blue-700);
+
+  --line-ink:      var(--ink-950);
+  --line-strong:   #3A2818;
+  --line-soft:     var(--cream-300);
+  --line-hairline: rgba(39, 25, 18, 0.10);
+
+  --accent:       var(--blue-500);
+  --accent-hover: var(--blue-600);
+  --accent-press: var(--blue-700);
+  --accent-soft:  var(--blue-300);
+  --focus-ring:   var(--blue-500);
+
+  --success:      var(--green-600);
+  --success-soft: var(--green-400);
+  --info:         var(--blue-500);
+  --warning:      var(--amber-500);
+  --danger:       var(--rose-500);
+}
+
+/* Dark mode overrides live in main.css as [data-byte-theme="dark"] — warm brown, NOT purple */

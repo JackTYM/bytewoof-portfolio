@@ -1,0 +1,33 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "bytewoof-portfolio",
+	"compatibility_date": "2026-06-17",
+	"pages_build_output_dir": "./dist",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	// KV namespace for boop counter + gallery likes
+	"kv_namespaces": [
+		{
+			"binding": "BOOPS_KV",
+			"id": "135abeec90b94a96a5adfe75bfbf8f95",
+			"preview_id": "135abeec90b94a96a5adfe75bfbf8f95"
+		}
+	],
+	// R2 bucket for gallery images
+	// Create with: wrangler r2 bucket create bytewoof-gallery
+	"r2_buckets": [
+		{
+			"binding": "GALLERY_R2",
+			"bucket_name": "bytewoof-gallery",
+			"preview_bucket_name": "bytewoof-gallery-preview"
+		}
+	]
+	// GUESTBOOK_ADMIN_TOKEN — secret for approving/rejecting guestbook entries.
+	// Set with: wrangler pages secret put GUESTBOOK_ADMIN_TOKEN
+	// Use with: curl -H "x-admin-token: <token>" /api/guestbook/admin
+}

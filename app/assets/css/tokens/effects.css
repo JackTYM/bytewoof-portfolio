@@ -1,0 +1,35 @@
+:root {
+  --radius-xs:   6px;
+  --radius-sm:   10px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-2xl:  36px;
+  --radius-pill: 999px;
+
+  --border-hairline: 1px solid var(--line-hairline);
+  --border-soft:     1.5px solid var(--line-soft);
+  --border-ink:      2.5px solid var(--line-ink);
+  --border-ink-thin: 2px solid var(--line-ink);
+
+  --shadow-xs: 0 1px 2px rgba(39, 25, 18, 0.08);
+  --shadow-sm: 0 2px 6px rgba(39, 25, 18, 0.10);
+  --shadow-md: 0 6px 18px rgba(39, 25, 18, 0.12);
+  --shadow-lg: 0 16px 40px rgba(39, 25, 18, 0.16);
+  --shadow-xl: 0 28px 70px rgba(39, 25, 18, 0.22);
+
+  --shadow-sticker:    3px 3px 0 var(--line-ink);
+  --shadow-sticker-sm: 2px 2px 0 var(--line-ink);
+  --shadow-sticker-lg: 5px 5px 0 var(--line-ink);
+
+  --glow-blue: 0 0 0 4px rgba(76, 179, 230, 0.30);
+  --glow-soft: 0 0 24px rgba(143, 212, 245, 0.45);
+  --ring:      0 0 0 3px var(--surface-page), 0 0 0 5.5px var(--focus-ring);
+
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:   120ms;
+  --dur-base:   200ms;
+  --dur-slow:   360ms;
+}

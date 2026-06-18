@@ -1,0 +1,143 @@
+/* Byte Design System — token imports (same order as ByteWoof.dc.html) */
+@import './tokens/fonts.css';
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/effects.css';
+@import './tokens/base.css';
+
+/* ---- Global rules from ByteWoof.dc.html <style> block ---- */
+
+html { scroll-behavior: smooth; }
+body { margin: 0; }
+
+/* Dark mode = Byte's warm "night owl" brown, never purple.
+   Only the SEMANTIC surface/text/line tokens flip. */
+[data-byte-theme="dark"] {
+  --surface-page:   #1E130B;
+  --surface-card:   #3E2E20;
+  --surface-sunken: #150C06;
+  --surface-raised: #503C29;
+  --line-ink:       #F4E8D5;
+  --line-strong:    #F4E8D5;
+  --line-soft:      rgba(244, 232, 213, .24);
+  --line-hairline:  rgba(244, 232, 213, .14);
+  --text-strong:    #FCF5EA;
+  --text-body:      #EFE1CD;
+  --text-muted:     #CFB79E;
+  --text-faint:     #B19C83;
+  --text-link:      #A3DCF8;
+}
+[data-byte-theme="dark"] body,
+body[data-byte-theme="dark"] { background: #1E130B; }
+
+/* dark mode: swap loud tan paw texture for subtle cream-dusk so it never fights body text */
+[data-byte-theme="dark"] .byte-texture-paws {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='%23F0DCC4' fill-opacity='0.08'%3E%3Cg transform='translate(7 9) scale(0.8)'%3E%3Cellipse cx='6' cy='9.3' rx='2.05' ry='2.7'/%3E%3Cellipse cx='11' cy='6.6' rx='2.15' ry='2.85'/%3E%3Cellipse cx='16.4' cy='7.6' rx='2.05' ry='2.7'/%3E%3Cellipse cx='19.2' cy='12.2' rx='1.75' ry='2.25'/%3E%3Cpath d='M12 12.2c3.1 0 5.6 2.2 5.6 4.9 0 2.1-1.75 3.3-3.8 3.3-1.05 0-1.35-.42-1.8-.42s-.75.42-1.8.42c-2.05 0-3.8-1.2-3.8-3.3 0-2.7 2.5-4.9 5.6-4.9Z'/%3E%3C/g%3E%3Cg transform='translate(38 37) scale(0.62)'%3E%3Cellipse cx='6' cy='9.3' rx='2.05' ry='2.7'/%3E%3Cellipse cx='11' cy='6.6' rx='2.15' ry='2.85'/%3E%3Cellipse cx='16.4' cy='7.6' rx='2.05' ry='2.7'/%3E%3Cellipse cx='19.2' cy='12.2' rx='1.75' ry='2.25'/%3E%3Cpath d='M12 12.2c3.1 0 5.6 2.2 5.6 4.9 0 2.1-1.75 3.3-3.8 3.3-1.05 0-1.35-.42-1.8-.42s-.75.42-1.8.42c-2.05 0-3.8-1.2-3.8-3.3 0-2.7 2.5-4.9 5.6-4.9Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* keep secondary buttons from flashing to light cream on hover in dark */
+[data-byte-theme="dark"] .byte-btn--secondary:hover { background: var(--surface-raised); }
+
+/* slightly stronger muted/faint in light mode for small-text contrast (AA) */
+[data-byte-theme="light"] { --text-muted: #7C6650; --text-faint: #9A8470; }
+
+/* link-row subtitles: lift opacity so the mono sub clears AA on tone pills */
+.byte-linkrow__sub { opacity: 0.92 !important; }
+
+/* ---- Keyframes ---- */
+@keyframes byteBreathe  { 0%,100%{ transform:translateY(0) scale(1) }         50%{ transform:translateY(-3px) scale(1.015) } }
+@keyframes byteBob      { 0%,100%{ transform:translateY(0) rotate(-1deg) }     50%{ transform:translateY(-6px) rotate(1deg) } }
+@keyframes byteZoom     { 0%{ transform:translateY(0) rotate(-3deg) } 25%{ transform:translateY(-12px) rotate(3deg) } 50%{ transform:translateY(0) rotate(-3deg) } 75%{ transform:translateY(-7px) rotate(2deg) } 100%{ transform:translateY(0) rotate(-3deg) } }
+@keyframes bytePop      { 0%{ transform:scale(1) } 35%{ transform:scale(1.14) rotate(-4deg) } 70%{ transform:scale(.97) } 100%{ transform:scale(1) } }
+@keyframes byteZap      { 0%{ opacity:1; transform:translate(0,0) scale(.5) }   100%{ opacity:0; transform:translate(var(--zx), -64px) scale(1.15) } }
+@keyframes byteHeartFloat { 0%{ opacity:0; transform:translate(0,0) scale(.4) rotate(var(--hr)) } 18%{ opacity:1 } 100%{ opacity:0; transform:translate(var(--hx),-72px) scale(1.1) rotate(var(--hr)) } }
+@keyframes byteHeartSlow  { 0%{ opacity:0; transform:scale(.5) rotate(var(--hr)) } 10%{ opacity:1; transform:scale(1.12) rotate(var(--hr)) } 22%{ transform:scale(1) rotate(var(--hr)) } 78%{ opacity:1; transform:scale(1) translateY(0) rotate(var(--hr)) } 100%{ opacity:0; transform:scale(.95) translateY(-12px) rotate(var(--hr)) } }
+@keyframes bytePaw      { 0%{ opacity:.6; transform:translate(-50%,-50%) scale(.45) rotate(var(--pr)) } 100%{ opacity:0; transform:translate(-50%,-50%) scale(1) rotate(var(--pr)) } }
+@keyframes byteZzz      { 0%{ opacity:0; transform:translateY(2px) scale(.8) } 25%{ opacity:.95 } 100%{ opacity:0; transform:translateY(-30px) scale(1.1) } }
+@keyframes byteScan     { 0%{ transform:translateY(-100%) }  100%{ transform:translateY(120%) } }
+@keyframes byteTwinkle  { 0%,100%{ opacity:.25; transform:scale(.8) } 50%{ opacity:1; transform:scale(1.15) } }
+@keyframes byteFloatStar{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
+@keyframes byteSweep    { 0%{ transform:translateX(-120%) rotate(8deg) } 100%{ transform:translateX(320%) rotate(8deg) } }
+@keyframes byteBlink    { 0%,50%{ opacity:1 } 50.01%,100%{ opacity:0 } }
+
+/* mascot mood hooks */
+[data-mood="asleep"] [data-byte-face] { animation: byteBreathe 4.6s ease-in-out infinite }
+[data-mood="day"]    [data-byte-face] { animation: byteBob     2.6s ease-in-out infinite }
+[data-mood="wired"]  [data-byte-face] { animation: byteZoom    0.95s ease-in-out infinite }
+[data-mood="booped"] [data-byte-face] { animation: bytePop     0.5s var(--ease-spring) }
+
+/* motion-pause + reduced-motion freeze loops/trails/scanlines */
+[data-byte-motion="off"] [data-loop] { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto }
+  [data-loop] { animation: none !important }
+}
+
+/* visible, soft keyboard focus everywhere */
+:where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(76, 179, 230, .5);
+}
+
+::selection { background: var(--blue-300); color: #06283A; }
+
+/* ---- byte-btn — the ink-outline sticker button ---- */
+.byte-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2.5px solid var(--line-ink);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sticker-sm);
+  transition: transform .12s var(--ease-spring), box-shadow .12s var(--ease-spring);
+  white-space: nowrap;
+}
+.byte-btn:hover  { transform: translate(-1px, -1px); box-shadow: var(--shadow-sticker); }
+.byte-btn:active { transform: translate(0,0);         box-shadow: none; }
+
+/* variants */
+.byte-btn--primary   { background: var(--byte-blue); color: #06283A; }
+.byte-btn--secondary { background: var(--surface-card); color: var(--text-body); }
+.byte-btn--blush     { background: var(--blush-500); color: #5A1F30; }
+.byte-btn--dark      { background: var(--ink-950); color: var(--cream-100); }
+.byte-btn--ghost     { background: transparent; color: var(--text-body); box-shadow: none; }
+.byte-btn--ghost:hover { box-shadow: var(--shadow-sticker-sm); }
+
+/* sizes */
+.byte-btn--sm  { padding: 6px 14px; font-size: 13px; }
+.byte-btn--md  { padding: 10px 18px; font-size: 15px; }
+.byte-btn--lg  { padding: 13px 22px; font-size: 16px; }
+
+/* ---- byte-linkrow ---- */
+.byte-linkrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  border: 2.5px solid var(--line-ink);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sticker-sm);
+  text-decoration: none;
+  transition: transform .12s var(--ease-spring), box-shadow .12s var(--ease-spring);
+}
+.byte-linkrow:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-sticker); }
+.byte-linkrow:active { transform: none; box-shadow: none; }
+.byte-linkrow__stamp {
+  width: 44px; height: 44px; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--line-ink); border-radius: 11px;
+}
+.byte-linkrow__body { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.byte-linkrow__title { font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+.byte-linkrow__sub   { font-family: var(--font-mono); font-size: 12px; }
+.byte-linkrow__go {
+  flex: none; width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--line-ink); border-radius: 50%;
+  font-family: var(--font-display); font-weight: 800; font-size: 16px;
+}
