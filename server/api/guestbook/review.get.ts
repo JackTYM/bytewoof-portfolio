@@ -15,7 +15,7 @@ function html(title: string, body: string, status = 200) {
   .field{margin-bottom:14px}
   .label{font-size:11px;font-weight:700;color:#8a7461;font-family:monospace;margin-bottom:4px}
   .value{font-size:15px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
-  img{max-width:100%;border-radius:12px;border:2px solid #5a4030;margin-top:10px;display:block}
+  img{width:100%;border-radius:12px;border:2px solid #5a4030;margin-top:10px;display:block;image-rendering:pixelated}
   .actions{display:flex;gap:12px;margin-top:22px}
   button{flex:1;padding:11px;font-size:14px;font-weight:800;cursor:pointer;border-radius:12px;border:2.5px solid #5a4030;transition:opacity .15s}
   .approve{background:#3AA0DA;color:#06283A}
