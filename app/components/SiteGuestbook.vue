@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getStroke } from 'perfect-freehand'
 import type { GuestEntry } from '~/content/site'
 
 const entries = ref<GuestEntry[]>([])
@@ -7,18 +8,22 @@ const msg = ref('')
 const pending = ref(false)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
+const colorInputRef = ref<HTMLInputElement | null>(null)
+const overlayColorInputRef = ref<HTMLInputElement | null>(null)
 const zoomed = ref(false)
-const canvasRatio = ref(4)
-let dctx: CanvasRenderingContext2D | null = null
-let overlayCtx: CanvasRenderingContext2D | null = null
 let drew = false
-let doodleCleanup: (() => void) | null = null
 
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
-const SIZES = [{ label: 'S', w: 2 }, { label: 'M', w: 4 }, { label: 'L', w: 8 }]
+const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
 const brushSize = ref(SIZES[1].w)
+const brushOpacity = ref(1)
 const erasing = ref(false)
+
+let mainCtx: CanvasRenderingContext2D | null = null
+let mainOff: HTMLCanvasElement | null = null
+let mainCleanup: (() => void) | null = null
+let overlayCleanup: (() => void) | null = null
 
 async function loadEntries() {
   try {
@@ -27,133 +32,161 @@ async function loadEntries() {
   } catch {}
 }
 
-function initDoodle() {
-  const c = canvasRef.value
-  if (!c) return
+function getSvgPath(pts: number[][]): string {
+  if (!pts.length) return ''
+  const d: (string | number)[] = ['M', pts[0][0], pts[0][1], 'Q']
+  for (let i = 0; i < pts.length; i++) {
+    const [x0, y0] = pts[i]
+    const [x1, y1] = pts[(i + 1) % pts.length]
+    d.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2)
+  }
+  d.push('Z')
+  return d.join(' ')
+}
+
+function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null) {
   const rect = c.getBoundingClientRect()
   const w = Math.round(rect.width), h = Math.round(rect.height)
-  if (w < 2 || h < 2) { setTimeout(initDoodle, 250); return }
+  if (w < 2 || h < 2) return null
+
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
   c.width = w * dpr; c.height = h * dpr
   const ctx = c.getContext('2d')!
   ctx.scale(dpr, dpr)
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round'
-  dctx = ctx; drew = false
 
-  let drawing = false
-  let last = { x: 0, y: 0 }
+  const off = document.createElement('canvas')
+  off.width = c.width; off.height = c.height
+  const offCtx = off.getContext('2d')!
+
+  if (copyFrom && copyFrom.width > 0) {
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.drawImage(copyFrom, 0, 0, c.width, c.height)
+    ctx.restore()
+    offCtx.drawImage(copyFrom, 0, 0, c.width, c.height)
+  }
+
+  let pts: Array<[number, number, number]> = []
+  let down = false
+
   const pos = (e: PointerEvent) => {
     const r = c.getBoundingClientRect()
     return { x: e.clientX - r.left, y: e.clientY - r.top }
   }
-  const down = (e: PointerEvent) => {
-    drawing = true; last = pos(e)
-    try { c.setPointerCapture(e.pointerId) } catch {}
+
+  const commit = () => {
+    offCtx.clearRect(0, 0, off.width, off.height)
+    offCtx.drawImage(c, 0, 0)
+  }
+
+  const restore = () => {
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.clearRect(0, 0, c.width, c.height)
+    ctx.drawImage(off, 0, 0)
+    ctx.restore()
+  }
+
+  const drawStroke = (points: Array<[number, number, number]>) => {
+    const stroke = getStroke(points, {
+      size: brushSize.value,
+      thinning: erasing.value ? 0 : 0.5,
+      smoothing: 0.5,
+      streamline: 0.5,
+    })
+    if (!stroke.length) return
+    const path = new Path2D(getSvgPath(stroke))
+    ctx.save()
+    ctx.globalAlpha = brushOpacity.value
     ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
-    ctx.strokeStyle = brushColor.value
     ctx.fillStyle = brushColor.value
-    ctx.lineWidth = brushSize.value
-    ctx.beginPath(); ctx.arc(last.x, last.y, brushSize.value / 2, 0, 7)
-    ctx.fill()
+    ctx.fill(path)
+    ctx.restore()
+  }
+
+  const onDown = (e: PointerEvent) => {
+    down = true
+    const p = pos(e)
+    pts = [[p.x, p.y, e.pressure || 0.5]]
+    try { c.setPointerCapture(e.pointerId) } catch {}
+    restore(); drawStroke(pts)
     drew = true; e.preventDefault()
   }
-  const move = (e: PointerEvent) => {
-    if (!drawing) return
-    const p = pos(e)
-    ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
-    ctx.strokeStyle = brushColor.value
-    ctx.lineWidth = brushSize.value
-    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke()
-    last = p
-  }
-  const up = () => { drawing = false }
 
-  c.addEventListener('pointerdown', down)
-  c.addEventListener('pointermove', move)
-  window.addEventListener('pointerup', up)
-  doodleCleanup = () => {
-    c.removeEventListener('pointerdown', down)
-    c.removeEventListener('pointermove', move)
-    window.removeEventListener('pointerup', up)
+  const onMove = (e: PointerEvent) => {
+    if (!down) return
+    const p = pos(e)
+    pts.push([p.x, p.y, e.pressure || 0.5])
+    restore(); drawStroke(pts)
   }
+
+  const onUp = () => {
+    if (!down) return
+    down = false; commit(); pts = []
+  }
+
+  c.addEventListener('pointerdown', onDown)
+  c.addEventListener('pointermove', onMove)
+  window.addEventListener('pointerup', onUp)
+
+  return {
+    ctx, off,
+    cleanup: () => {
+      c.removeEventListener('pointerdown', onDown)
+      c.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    },
+  }
+}
+
+function initDoodle() {
+  const c = canvasRef.value
+  if (!c) return
+  const result = setupDrawing(c)
+  if (!result) { setTimeout(initDoodle, 250); return }
+  mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
+  drew = false
 }
 
 function clearDoodle() {
   const c = canvasRef.value
-  if (!c || !dctx) return
-  dctx.save(); dctx.setTransform(1, 0, 0, 1, 0, 0); dctx.clearRect(0, 0, c.width, c.height); dctx.restore()
-  if (overlayCtx && overlayCanvasRef.value) {
-    const oc = overlayCanvasRef.value
-    overlayCtx.save(); overlayCtx.setTransform(1,0,0,1,0,0); overlayCtx.clearRect(0,0,oc.width,oc.height); overlayCtx.restore()
+  if (c && mainCtx) {
+    mainCtx.save(); mainCtx.setTransform(1, 0, 0, 1, 0, 0)
+    mainCtx.clearRect(0, 0, c.width, c.height); mainCtx.restore()
+  }
+  if (mainOff) mainOff.getContext('2d')!.clearRect(0, 0, mainOff.width, mainOff.height)
+  const oc = overlayCanvasRef.value
+  if (oc) {
+    const octx = oc.getContext('2d')
+    if (octx) { octx.save(); octx.setTransform(1,0,0,1,0,0); octx.clearRect(0,0,oc.width,oc.height); octx.restore() }
   }
   drew = false
 }
 
 function openZoom() {
-  const sc = canvasRef.value
-  if (sc) canvasRatio.value = sc.offsetWidth / sc.offsetHeight
   zoomed.value = true
   nextTick(() => {
     const oc = overlayCanvasRef.value
     if (!oc) return
-    const rect = oc.getBoundingClientRect()
-    const w = Math.round(rect.width), h = Math.round(rect.height)
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    oc.width = w * dpr; oc.height = h * dpr
-    const ctx = oc.getContext('2d')!
-    ctx.scale(dpr, dpr)
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'
-    overlayCtx = ctx
-
-    const sc = canvasRef.value
-    if (sc && sc.width > 0) {
-      ctx.save(); ctx.setTransform(1,0,0,1,0,0)
-      ctx.drawImage(sc, 0, 0, oc.width, oc.height)
-      ctx.restore()
-    }
-
-    let drawing = false
-    let last = { x: 0, y: 0 }
-    const pos = (e: PointerEvent) => {
-      const r = oc.getBoundingClientRect()
-      return { x: e.clientX - r.left, y: e.clientY - r.top }
-    }
-    const down = (e: PointerEvent) => {
-      drawing = true; last = pos(e)
-      try { oc.setPointerCapture(e.pointerId) } catch {}
-      ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
-      ctx.strokeStyle = brushColor.value
-      ctx.fillStyle = brushColor.value
-      ctx.lineWidth = brushSize.value + 1
-      ctx.beginPath(); ctx.arc(last.x, last.y, (brushSize.value + 1) / 2, 0, 7)
-      ctx.fill()
-      drew = true; e.preventDefault()
-    }
-    const move = (e: PointerEvent) => {
-      if (!drawing) return
-      const p = pos(e)
-      ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
-      ctx.strokeStyle = brushColor.value
-      ctx.lineWidth = brushSize.value + 1
-      ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke()
-      last = p
-    }
-    const up = () => { drawing = false }
-    oc.addEventListener('pointerdown', down)
-    oc.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
+    const result = setupDrawing(oc, canvasRef.value)
+    if (!result) return
+    overlayCleanup = result.cleanup
   })
 }
 
 function closeZoom() {
   const oc = overlayCanvasRef.value
   const sc = canvasRef.value
-  if (oc && sc && dctx) {
-    dctx.save(); dctx.setTransform(1,0,0,1,0,0)
-    dctx.clearRect(0,0,sc.width,sc.height)
-    dctx.drawImage(oc, 0, 0, sc.width, sc.height)
-    dctx.restore()
+  if (oc && sc && mainCtx) {
+    mainCtx.save(); mainCtx.setTransform(1, 0, 0, 1, 0, 0)
+    mainCtx.clearRect(0, 0, sc.width, sc.height)
+    mainCtx.drawImage(oc, 0, 0, sc.width, sc.height)
+    mainCtx.restore()
+    if (mainOff) {
+      const oCtx = mainOff.getContext('2d')!
+      oCtx.clearRect(0, 0, mainOff.width, mainOff.height)
+      oCtx.drawImage(oc, 0, 0, mainOff.width, mainOff.height)
+    }
   }
+  if (overlayCleanup) { overlayCleanup(); overlayCleanup = null }
   zoomed.value = false
 }
 
@@ -174,21 +207,14 @@ async function signGuest(e: Event) {
       body: { name: trimName.slice(0, 40), message: trimMsg.slice(0, 280), doodle },
     })
     pending.value = true
-    name.value = ''
-    msg.value = ''
+    name.value = ''; msg.value = ''
     clearDoodle()
     setTimeout(loadEntries, 1200)
   } catch {}
 }
 
-onMounted(() => {
-  loadEntries()
-  initDoodle()
-})
-
-onUnmounted(() => {
-  if (doodleCleanup) doodleCleanup()
-})
+onMounted(() => { loadEntries(); initDoodle() })
+onUnmounted(() => { if (mainCleanup) mainCleanup() })
 </script>
 
 <template>
@@ -220,99 +246,162 @@ onUnmounted(() => {
         >
       </div>
 
-      <div style="display:flex; align-items:stretch; gap:9px;">
-        <div style="position:relative; flex:1;">
-          <canvas
-            ref="canvasRef"
-            aria-label="draw an optional doodle"
-            style="width:100%; height:84px; border:2.5px dashed var(--line-soft); border-radius:11px; background:var(--surface-sunken); touch-action:none; cursor:crosshair; display:block;"
-          ></canvas>
-          <button
-            type="button"
-            @click="openZoom"
-            title="expand canvas"
-            aria-label="open full-screen drawing canvas"
-            style="position:absolute; top:6px; right:6px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid var(--line-ink); border-radius:7px; background:var(--surface-card); color:var(--text-muted);"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:14px;height:14px">
-              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-            </svg>
-          </button>
-        </div>
+      <!-- canvas + expand -->
+      <div style="position:relative;">
+        <canvas
+          ref="canvasRef"
+          aria-label="draw an optional doodle"
+          style="width:100%; aspect-ratio:1; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;"
+        ></canvas>
         <button
           type="button"
-          @click="clearDoodle"
-          title="clear doodle"
-          style="flex:none; align-self:stretch; width:54px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; color:var(--text-muted); border:2.5px solid var(--line-ink); border-radius:11px; background:var(--surface-card);"
-        >clear</button>
+          @click="openZoom"
+          title="expand canvas"
+          aria-label="open full-screen drawing canvas"
+          style="position:absolute; top:8px; right:8px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid var(--line-ink); border-radius:8px; background:var(--surface-card); color:var(--text-muted);"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:14px;height:14px">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </button>
       </div>
 
-      <!-- color + brush toolbar -->
-      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:2px 0;">
+      <!-- toolbar -->
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
+        <!-- palette swatches -->
         <button
-          v-for="color in PALETTE"
-          :key="color"
+          v-for="color in PALETTE" :key="color"
           type="button"
           @click="brushColor = color; erasing = false"
           :aria-label="`draw in ${color}`"
           :style="`width:20px; height:20px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
         ></button>
+        <!-- custom color picker swatch -->
+        <div style="position:relative; width:20px; height:20px; flex:none;">
+          <button
+            type="button"
+            @click="colorInputRef?.click()"
+            aria-label="pick custom color"
+            :style="`width:20px; height:20px; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; cursor:pointer; border:2px solid var(--line-soft); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
+          ></button>
+          <input
+            ref="colorInputRef"
+            type="color"
+            :value="brushColor"
+            @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
+            style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;" tabindex="-1"
+          >
+        </div>
+
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+
+        <!-- size -->
         <button
-          v-for="sz in SIZES"
-          :key="sz.label"
+          v-for="sz in SIZES" :key="sz.label"
           type="button"
           @click="brushSize = sz.w"
-          :style="`min-width:28px; height:22px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${brushSize === sz.w ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+          :style="`min-width:26px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${brushSize === sz.w ? 'var(--cream-100)' : 'var(--text-muted)'};`"
         >{{ sz.label }}</button>
+
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+
+        <!-- opacity -->
+        <input
+          type="range" min="0.05" max="1" step="0.05"
+          v-model.number="brushOpacity"
+          aria-label="opacity"
+          style="width:56px; cursor:pointer; accent-color:var(--byte-blue); flex:none;"
+        >
+
+        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+
+        <!-- eraser -->
         <button
           type="button"
           @click="erasing = !erasing"
           aria-label="eraser"
-          :style="`min-width:28px; height:22px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+          :style="`min-width:26px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
         >⌫</button>
+
+        <!-- clear -->
+        <button
+          type="button"
+          @click="clearDoodle"
+          style="min-width:36px; height:22px; padding:0 8px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; color:var(--text-muted); border:2px solid var(--line-ink); border-radius:6px; background:var(--surface-card);"
+        >clr</button>
       </div>
 
-      <!-- full-screen doodle overlay -->
+      <!-- fullscreen overlay -->
       <Teleport to="body">
         <div
           v-if="zoomed"
-          style="position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; background:color-mix(in srgb, var(--ink-950) 90%, transparent); backdrop-filter:blur(4px); padding:20px;"
+          style="position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; background:color-mix(in srgb, var(--ink-950) 92%, transparent); backdrop-filter:blur(4px); padding:16px;"
           @keydown.esc="closeZoom"
         >
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
-            <span style="font-family:var(--font-display); font-weight:800; font-size:17px; color:var(--cream-100);">doodle me something 🎨</span>
-            <!-- color + size controls in overlay header -->
-            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <!-- overlay toolbar -->
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+            <span style="font-family:var(--font-display); font-weight:800; font-size:16px; color:var(--cream-100);">doodle me something</span>
+            <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+              <!-- palette -->
               <button
-                v-for="color in PALETTE"
-                :key="color"
+                v-for="color in PALETTE" :key="color"
                 type="button"
                 @click="brushColor = color; erasing = false"
-                :aria-label="`draw in ${color}`"
                 :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
               ></button>
+              <!-- custom color -->
+              <div style="position:relative; width:22px; height:22px; flex:none;">
+                <button
+                  type="button"
+                  @click="overlayColorInputRef?.click()"
+                  :style="`width:22px; height:22px; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; cursor:pointer; border:2px solid rgba(255,255,255,.3); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
+                ></button>
+                <input
+                  ref="overlayColorInputRef"
+                  type="color"
+                  :value="brushColor"
+                  @input="(e) => { brushColor = (e.target as HTMLInputElement).value; erasing = false }"
+                  style="position:absolute; opacity:0; width:0; height:0; pointer-events:none;" tabindex="-1"
+                >
+              </div>
+
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
+
+              <!-- size -->
               <button
-                v-for="sz in SIZES"
-                :key="sz.label"
+                v-for="sz in SIZES" :key="sz.label"
                 type="button"
                 @click="brushSize = sz.w"
-                :style="`min-width:28px; height:24px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${brushSize === sz.w ? '#FFF8EE' : 'transparent'}; color:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+                :style="`min-width:26px; height:24px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${brushSize === sz.w ? '#FFF8EE' : 'transparent'}; color:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--cream-100)'};`"
               >{{ sz.label }}</button>
+
+              <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
+
+              <!-- opacity -->
+              <input
+                type="range" min="0.05" max="1" step="0.05"
+                v-model.number="brushOpacity"
+                aria-label="opacity"
+                style="width:60px; cursor:pointer; accent-color:#FFF8EE; flex:none;"
+              >
+
+              <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
+
+              <!-- eraser -->
               <button
                 type="button"
                 @click="erasing = !erasing"
-                aria-label="eraser"
-                :style="`min-width:28px; height:24px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+                :style="`min-width:26px; height:24px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
               >⌫</button>
-              <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
+
+              <!-- clear -->
               <button
                 type="button"
                 @click="clearDoodle"
-                style="padding:5px 14px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:12px; color:var(--text-muted); border:2.5px solid var(--line-ink); border-radius:10px; background:var(--surface-card);"
-              >clear</button>
+                style="min-width:36px; height:24px; padding:0 8px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border:2px solid rgba(255,255,255,.3); border-radius:7px; background:transparent; color:var(--cream-100);"
+              >clr</button>
+
+              <!-- done -->
               <button
                 type="button"
                 @click="closeZoom"
@@ -320,25 +409,19 @@ onUnmounted(() => {
               >done ✓</button>
             </div>
           </div>
+
           <canvas
             ref="overlayCanvasRef"
             aria-label="full-screen drawing canvas"
-            :style="`display:block; width:100%; max-height:calc(100vh - 120px); aspect-ratio:${canvasRatio}; border:2.5px dashed var(--line-soft); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;`"
+            style="display:block; width:100%; flex:1; min-height:0; aspect-ratio:1; max-width:calc(100vh - 100px); margin:0 auto; border:2.5px dashed rgba(255,255,255,.2); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;"
           ></canvas>
         </div>
       </Teleport>
 
       <div style="display:flex; align-items:center; justify-content:space-between; gap:9px; flex-wrap:wrap;">
         <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">↑ optional: doodle me something</span>
-        <button
-          v-if="!pending"
-          type="submit"
-          class="byte-btn byte-btn--blush byte-btn--sm"
-        >sign »</button>
-        <span
-          v-else
-          style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);"
-        >thanks — your note is pending approval ♥</span>
+        <button v-if="!pending" type="submit" class="byte-btn byte-btn--blush byte-btn--sm">sign »</button>
+        <span v-else style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">thanks — your note is pending approval ♥</span>
       </div>
     </form>
 
@@ -357,7 +440,7 @@ onUnmounted(() => {
           v-if="entry.doodle"
           :src="entry.doodle"
           :alt="`doodle by ${entry.name}`"
-          style="width:100%; border:2px solid var(--line-ink); border-radius:10px; background:#FFF8EE; display:block; image-rendering:pixelated;"
+          style="width:100%; border:2px solid var(--line-ink); border-radius:10px; background:#FFF8EE; display:block;"
         >
       </div>
     </div>
