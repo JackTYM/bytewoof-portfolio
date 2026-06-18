@@ -1,5 +1,5 @@
 /* ============================================================
- * Byte — site content
+ * Byte - site content
  * ============================================================
  * EDIT THIS FILE to swap in real values.
  * Every "TODO: real value" comment marks a placeholder.
@@ -71,7 +71,7 @@ export const PROJECTS: Project[] = [
     name: 'MarketShark',
     status: 'open sourced',
     statusColor: 'var(--green-600)',
-    description: 'full-stack system for automatic auction flipping in hypixel skyblock in minecraft — a backend server, a java mod, and a native c++ client. my first real business and made me $4k in high school.',
+    description: 'full-stack system for automatic auction flipping in hypixel skyblock in minecraft - a backend server, a java mod, and a native c++ client. my first real business and made me $4k in high school.',
     tags: ['c++', 'minecraft', 'discord'],
     ctaLabel: 'view source',
     href: 'https://github.com/JackTYM/MarketShark',
@@ -218,8 +218,8 @@ export const CONS: Con[] = [
     slug: 'defcon-34',
     name: 'DEF CON 34',
     kind: 'hacking / infosec',
-    month: 'AUG', day: '6–9', year: '2026',
-    dates: 'aug 6–9, 2026',
+    month: 'AUG', day: '6-9', year: '2026',
+    dates: 'aug 6-9, 2026',
     city: 'las vegas, nv',
     venue: 'las vegas convention center',
     blurb: "the big one. four days of talks, villages, and demo labs. this year's theme is “agency.” come find me in the crowd.",
@@ -230,11 +230,11 @@ export const CONS: Con[] = [
     slug: 'pdfc-2027',
     name: 'Painted Desert Fur Con',
     kind: 'furry con',
-    month: 'JAN', day: '1–3', year: '2027',
-    dates: 'jan 1–3, 2027',
+    month: 'JAN', day: '1-3', year: '2027',
+    dates: 'jan 1-3, 2027',
     city: 'phoenix, az',
     venue: 'sheraton phoenix downtown',
-    blurb: "arizona’s furry con — theme “mad mammal: furry road.” panels, dances, and a lot of fur. say hi if you spot the wolfdog.",
+    blurb: "arizona’s furry con - theme “mad mammal: furry road.” panels, dances, and a lot of fur. say hi if you spot the wolfdog.",
     href: 'https://painteddesertfc.org/',
     accent: 'var(--blush-300)', accentFg: '#6B273C',
   },

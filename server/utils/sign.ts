@@ -1,5 +1,5 @@
 /* HMAC-SHA256 signing helpers for stateless approval links.
- * Auto-imported by Nitro — no explicit import needed in server routes. */
+ * Auto-imported by Nitro - no explicit import needed in server routes. */
 
 const enc = (s: string) => new TextEncoder().encode(s)
 

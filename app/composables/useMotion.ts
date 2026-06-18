@@ -1,4 +1,4 @@
-/* Motion — animate / pause. Attribute: data-byte-motion on <html>.
+/* Motion - animate / pause. Attribute: data-byte-motion on <html>.
  * Storage key: byte.motion. Defaults off when prefers-reduced-motion. */
 export function useMotion() {
   const motionOn = useState<boolean>('motionOn', () => true)

@@ -1,4 +1,4 @@
-/* Byte Design System — token imports (same order as ByteWoof.dc.html) */
+/* Byte Design System - token imports (same order as ByteWoof.dc.html) */
 @import './tokens/fonts.css';
 @import './tokens/colors.css';
 @import './tokens/typography.css';
@@ -82,7 +82,7 @@ body[data-byte-theme="dark"] { background: #1E130B; }
 
 ::selection { background: var(--blue-300); color: #06283A; }
 
-/* ---- byte-btn — the ink-outline sticker button ---- */
+/* ---- byte-btn - the ink-outline sticker button ---- */
 .byte-btn {
   display: inline-flex;
   align-items: center;

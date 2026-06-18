@@ -1,4 +1,4 @@
-/* POST /api/guestbook — submit a new guestbook entry (pending approval).
+/* POST /api/guestbook - submit a new guestbook entry (pending approval).
  * Body: { name: string, message: string, doodle?: string (data-URL, ≤80KB) }
  * Stores as gb:pending:<ts>-<rand> in KV with 60-day TTL, then notifies
  * the Discord webhook with a signed review link. */
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   await kv.put(id, JSON.stringify(entry), { expirationTtl: 60 * 24 * 60 * 60 }) // 60 days
 
-  // Discord webhook notification — fire-and-forget, never breaks submission
+  // Discord webhook notification - fire-and-forget, never breaks submission
   const env = event.context.cloudflare?.env as Record<string, string> | undefined
   const signingSecret = env?.GUESTBOOK_SIGNING_SECRET
   const webhookUrl = env?.DISCORD_WEBHOOK_URL

@@ -1,8 +1,8 @@
 /* Night-owl clock. Updates every 60s.
  * Buckets (24h):
- *   4–12  → asleep  "asleep · sleeping in"
- *  12–20  → awake   "awake · up and about"
- *  20–4   → wired   "wired · zoomies hours"
+ *   4-12  → asleep  "asleep · sleeping in"
+ *  12-20  → awake   "awake · up and about"
+ *  20-4   → wired   "wired · zoomies hours"
  */
 export type ClockMood = 'asleep' | 'day' | 'wired'
 

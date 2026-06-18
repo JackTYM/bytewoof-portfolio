@@ -29,7 +29,7 @@ function pet() {
         <!-- body -->
         <div style="padding:17px 18px 22px; font-size:14px; line-height:1.75; position:relative;">
           <div><span style="color:var(--blue-400); user-select:none;">$</span> <span style="color:#fff; font-weight:600;">whoami</span></div>
-          <div style="opacity:.92;">byte — wolfdog · he/him · software engineer 🌙</div>
+          <div style="opacity:.92;">byte - wolfdog · he/him · software engineer 🌙</div>
 
           <div style="margin-top:6px;"><span style="color:var(--blue-400); user-select:none;">$</span> <span style="color:#fff; font-weight:600;">ls ~/byte</span></div>
           <div style="opacity:.92;">
@@ -55,7 +55,7 @@ function pet() {
             >sudo pet byte</button>
           </div>
           <div style="opacity:.92; color:var(--blush-400);">
-            ♥ *tail wag* — boop #<span style="color:var(--blush-300); font-weight:700;">{{ total.toLocaleString() }}</span> recorded
+            ♥ *tail wag* - boop #<span style="color:var(--blush-300); font-weight:700;">{{ total.toLocaleString() }}</span> recorded
             <span style="color:rgba(240,220,196,.45); font-size:12px;">(≈ {{ bytesLabel(total) }})</span>
             <span data-loop style="display:inline-block; width:8px; height:1.05em; vertical-align:-2px; margin-left:5px; background:var(--blue-400); animation:byteBlink 1.1s steps(1) infinite;"></span>
           </div>

@@ -50,11 +50,11 @@ export default defineEventHandler(async (event) => {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.ico">
-<title>guestbook management — byte</title>
+<title>guestbook management - byte</title>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#1a1a1a;color:#f0dcc4;padding:32px 20px;max-width:620px;margin:0 auto}h1{font-size:22px;font-weight:800;margin-bottom:6px}p.sub{color:#8a7461;font-size:13px;margin-bottom:24px}</style>
 </head><body>
   <h1>approved entries (${entries.length})</h1>
-  <p class="sub">byte guestbook admin — changes take effect immediately</p>
+  <p class="sub">byte guestbook admin - changes take effect immediately</p>
   ${rows}
 </body></html>`, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' } })
 })

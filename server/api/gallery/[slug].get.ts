@@ -1,4 +1,4 @@
-/* GET /api/gallery/:slug — proxies an image from R2.
+/* GET /api/gallery/:slug - proxies an image from R2.
  * Use this only as a fallback. For production, configure a public R2 custom
  * domain at images.byte.dog pointing directly to the bucket (zero Worker cost). */
 export default defineEventHandler(async (event) => {

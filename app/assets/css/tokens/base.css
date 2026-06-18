@@ -1,4 +1,4 @@
-/* Byte — Base element defaults. Sets the warm, cozy baseline.
+/* Byte - Base element defaults. Sets the warm, cozy baseline.
  * Optional for consumers, but makes raw HTML look on-brand instantly. */
 
 * { box-sizing: border-box; }
@@ -53,7 +53,7 @@ code {
 }
 
 /* ---- Textures ----
- * Soft scattered "paw field" — warm, cozy paw-print texture for the friendly
+ * Soft scattered "paw field" - warm, cozy paw-print texture for the friendly
  * side of Byte. Sits behind content; pairs best with cream surfaces. Use the
  * --dusk variant on dark/twilight backgrounds. Keep it subtle. */
 .byte-texture-paws {

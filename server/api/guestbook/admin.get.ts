@@ -1,4 +1,4 @@
-/* GET /api/guestbook/admin — list pending entries (admin only).
+/* GET /api/guestbook/admin - list pending entries (admin only).
  * Requires header: x-admin-token matching env.GUESTBOOK_ADMIN_TOKEN
  *
  * Set the token with: wrangler pages secret put GUESTBOOK_ADMIN_TOKEN

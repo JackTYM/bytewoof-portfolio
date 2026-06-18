@@ -1,4 +1,4 @@
-/* POST /api/gallery/likes — increments like count for one image.
+/* POST /api/gallery/likes - increments like count for one image.
  * Whole likes map stored as one JSON value to minimise KV read/write ops. */
 export default defineEventHandler(async (event) => {
   const body = await readBody(event).catch(() => ({}))

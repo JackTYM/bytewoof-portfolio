@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   try { if (existing) approved = JSON.parse(existing) } catch {}
 
   if (index >= approved.length) {
-    // Already gone — redirect back (idempotent)
+    // Already gone - redirect back (idempotent)
     return sendRedirect(event, `/api/guestbook/manage?token=${encodeURIComponent(token)}`, 302)
   }
 

@@ -1,4 +1,4 @@
-/* Byte — Color tokens */
+/* Byte - Color tokens */
 :root {
   --byte-brown:        #6E4A34;
   --byte-brown-dark:   #432C1F;
@@ -78,4 +78,4 @@
   --danger:       var(--rose-500);
 }
 
-/* Dark mode overrides live in main.css as [data-byte-theme="dark"] — warm brown, NOT purple */
+/* Dark mode overrides live in main.css as [data-byte-theme="dark"] - warm brown, NOT purple */

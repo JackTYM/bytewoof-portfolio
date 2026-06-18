@@ -502,7 +502,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
             </div>
           </div>
 
-          <!-- always-visible close button — anchored to top-right so it's reachable on mobile even if toolbar wraps -->
+          <!-- always-visible close button - anchored to top-right so it's reachable on mobile even if toolbar wraps -->
           <button
             type="button"
             @click="closeZoom"
@@ -521,7 +521,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
       <div style="display:flex; align-items:center; justify-content:space-between; gap:9px; flex-wrap:wrap;">
         <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">↑ optional: doodle me something</span>
         <button v-if="!pending" type="submit" class="byte-btn byte-btn--blush byte-btn--sm">sign »</button>
-        <span v-else style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">thanks — your note is pending approval ♥</span>
+        <span v-else style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">thanks - your note is pending approval ♥</span>
       </div>
     </form>
 
@@ -534,7 +534,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
       >
         <div style="margin-bottom:6px;">
           <span style="font-family:var(--font-mono); font-weight:700; font-size:12.5px; color:var(--text-link);">{{ entry.name }}</span>
-          <span style="font-size:13.5px; color:var(--text-body);"> — {{ entry.message }}</span>
+          <span style="font-size:13.5px; color:var(--text-body);"> - {{ entry.message }}</span>
         </div>
         <img
           v-if="entry.doodle"

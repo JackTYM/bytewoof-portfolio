@@ -8,7 +8,7 @@ const isDark = computed(() => theme.value === 'dark')
   <nav style="position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(10px); background:color-mix(in srgb, var(--surface-page) 82%, transparent); border-bottom:2.5px solid var(--line-ink);">
     <div style="max-width:1120px; margin:0 auto; padding:11px 20px; display:flex; align-items:center; gap:16px;">
       <!-- logo -->
-      <a href="#home" aria-label="byte — home" style="display:inline-flex; align-items:center; gap:9px; text-decoration:none; color:var(--text-strong); flex:none;">
+      <a href="#home" aria-label="byte - home" style="display:inline-flex; align-items:center; gap:9px; text-decoration:none; color:var(--text-strong); flex:none;">
         <span style="width:38px; height:38px; flex:none; border-radius:50%; overflow:hidden; border:2.5px solid var(--line-ink); background:#FFF8EE; box-shadow:2.5px 2.5px 0 var(--line-ink);">
           <img :src="'https://cdn.bytewoof.dog/gallery/byte-icon.webp'" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;">
         </span>

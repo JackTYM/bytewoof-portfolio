@@ -20,7 +20,7 @@ function hover(el: EventTarget | null, on: boolean) {
         out &amp; about
       </div>
       <h2 style="font-family:var(--font-display); font-weight:800; font-size:clamp(30px,5vw,46px); line-height:1.04; letter-spacing:-.02em; color:var(--text-strong); margin:14px 0 0;">cons i'm attending</h2>
-      <p style="font-size:15px; font-weight:600; color:var(--text-body); margin:10px 0 0; max-width:48ch;">come say hi in person — here's where i'll be.</p>
+      <p style="font-size:15px; font-weight:600; color:var(--text-body); margin:10px 0 0; max-width:48ch;">come say hi in person - here's where i'll be.</p>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:22px; margin-top:30px;">
         <a

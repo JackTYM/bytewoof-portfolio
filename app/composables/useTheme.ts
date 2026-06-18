@@ -1,4 +1,4 @@
-/* Theme — light / dark. Attribute: data-byte-theme on <html> + <body>.
+/* Theme - light / dark. Attribute: data-byte-theme on <html> + <body>.
  * Storage key: byte.theme. Defaults to OS preference. */
 export function useTheme() {
   const theme = useState<'light' | 'dark'>('theme', () => 'light')

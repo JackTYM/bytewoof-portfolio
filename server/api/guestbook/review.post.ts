@@ -1,7 +1,7 @@
 /* POST /api/guestbook/review
  * Body (urlencoded): { id, sig, action: 'approve' | 'reject' }
  * Verifies HMAC signature then approves or rejects the pending entry.
- * Idempotent — double-clicking returns "already handled". */
+ * Idempotent - double-clicking returns "already handled". */
 import type { GuestEntry } from '~/app/content/site'
 
 function html(title: string, body: string, status = 200) {
@@ -10,7 +10,7 @@ function html(title: string, body: string, status = 200) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.ico">
-<title>${title} — byte guestbook</title>
+<title>${title} - byte guestbook</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:system-ui,sans-serif;background:#1a1a1a;color:#f0dcc4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}

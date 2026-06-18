@@ -1,5 +1,5 @@
 /* GET /api/guestbook/review?id=<id>&sig=<sig>
- * Read-only review page — verifies HMAC signature then renders the entry with
+ * Read-only review page - verifies HMAC signature then renders the entry with
  * Approve / Reject buttons. The GET itself is idempotent (Discord crawler-safe). */
 
 function html(title: string, body: string, status = 200) {
@@ -8,7 +8,7 @@ function html(title: string, body: string, status = 200) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.ico">
-<title>${title} — byte guestbook</title>
+<title>${title} - byte guestbook</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:system-ui,sans-serif;background:#1a1a1a;color:#f0dcc4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}

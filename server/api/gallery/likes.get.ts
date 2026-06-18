@@ -1,5 +1,5 @@
-/* GET /api/gallery/likes — returns all gallery like counts.
- * Cached 24h at edge — one KV read per cache miss, not per page load. */
+/* GET /api/gallery/likes - returns all gallery like counts.
+ * Cached 24h at edge - one KV read per cache miss, not per page load. */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
 

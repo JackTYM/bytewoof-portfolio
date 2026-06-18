@@ -1,4 +1,4 @@
-/* POST /api/guestbook/admin — approve or reject a pending entry (admin only).
+/* POST /api/guestbook/admin - approve or reject a pending entry (admin only).
  * Requires header: x-admin-token matching env.GUESTBOOK_ADMIN_TOKEN
  * Body: { id: string, action: 'approve' | 'reject' }
  *

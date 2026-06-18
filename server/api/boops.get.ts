@@ -1,4 +1,4 @@
-/* GET /api/boops — returns global boop total from KV.
+/* GET /api/boops - returns global boop total from KV.
  * Edge-cached for 24h: virtually zero KV reads at scale. */
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'public, max-age=300, stale-while-revalidate=60')

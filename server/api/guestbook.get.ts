@@ -1,4 +1,4 @@
-/* GET /api/guestbook — returns approved guestbook entries. Edge-cached 1h. */
+/* GET /api/guestbook - returns approved guestbook entries. Edge-cached 1h. */
 import type { GuestEntry } from '~/app/content/site'
 
 export default defineEventHandler(async (event) => {

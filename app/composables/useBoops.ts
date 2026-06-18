@@ -14,7 +14,7 @@ export function useBoops() {
       if (import.meta.client) {
         localStorage.setItem(CACHE_KEY, JSON.stringify({ total: data.total, ts: Date.now() }))
       }
-    } catch { /* offline — keep last value */ }
+    } catch { /* offline - keep last value */ }
   }
 
   function boop() {
@@ -38,10 +38,10 @@ export function useBoops() {
       if (import.meta.client) {
         localStorage.setItem(CACHE_KEY, JSON.stringify({ total: data.total, ts: Date.now() }))
       }
-    } catch { /* offline — delta is lost, not worth retrying */ }
+    } catch { /* offline - delta is lost, not worth retrying */ }
   }
 
-  /** Binary (1024) unit label — B / KiB / MiB / GiB */
+  /** Binary (1024) unit label - B / KiB / MiB / GiB */
   function bytesLabel(n: number): string {
     if (n < 1024)                 return `${n} B`
     if (n < 1024 * 1024)          return `${(n / 1024).toFixed(1)} KiB`
@@ -57,7 +57,7 @@ export function useBoops() {
         const cached = JSON.parse(raw) as { total: number; ts: number }
         if (Date.now() - cached.ts < CACHE_TTL) {
           total.value = cached.total
-          return // Skip network fetch — cache is fresh
+          return // Skip network fetch - cache is fresh
         }
       }
     } catch {}

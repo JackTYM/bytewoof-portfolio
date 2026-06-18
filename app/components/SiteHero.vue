@@ -17,7 +17,7 @@ const hearts = ref<Heart[]>([])
 let heartId = 0
 
 function reactionFor(streak: number) {
-  if (streak <= 1) return 'eep—!'
+  if (streak <= 1) return 'eep-!'
   if (streak === 2) return 'o-oh, h-hi'
   if (streak <= 4) return 'hehe ♥'
   if (streak <= 7) return '*tail wag*'
@@ -51,7 +51,7 @@ function handleBoop() {
   boopTimer = setTimeout(() => { reaction.value = null }, 4500)
   streakTimer = setTimeout(() => { boopStreak.value = 0 }, 4500)
   // Incrementing the key forces Vue to remount the span, which restarts the CSS animation
-  // from frame 0 on every tap — nextTick/false→true doesn't work because the browser
+  // from frame 0 on every tap - nextTick/false→true doesn't work because the browser
   // batches both DOM writes into one frame and never sees the "no animation" state.
   boopAnimKey.value++
   isBooped.value = true
@@ -71,7 +71,7 @@ const odo = computed<OdoCell[]>(() => {
 
 const bLabel = computed(() => bytesLabel(total.value))
 
-/* Stars — same positions as the design */
+/* Stars - same positions as the design */
 const STARS = [
   { left: '8%',  top: '14%', size: 18, color: '#FFF3D8', anim: 'byteTwinkle 3.4s ease-in-out infinite' },
   { left: '22%', top: '8%',  size: 11, color: '#8FD4F5', anim: 'byteTwinkle 2.8s ease-in-out .6s infinite' },
@@ -201,7 +201,7 @@ const STAR_PATH = 'M12 2L14.35 8.76L21.51 8.91L15.8 13.24L17.88 20.09L12 16L6.12
               >
                 <span style="display:block; width:clamp(160px,46vw,210px); height:clamp(160px,46vw,210px); border-radius:50%; overflow:hidden; border:3px solid #211309; box-shadow:5px 5px 0 var(--line-ink); background:#FFFFFF;">
                   <span data-byte-face data-loop :key="boopAnimKey" style="position:relative; display:block; width:108%; height:108%; margin:-4%;">
-                    <img :src="'https://cdn.bytewoof.dog/gallery/byte-icon.webp'" alt="Byte the wolfdog — boop his nose" style="width:100%; height:100%; object-fit:cover; object-position:center 32%; display:block;">
+                    <img :src="'https://cdn.bytewoof.dog/gallery/byte-icon.webp'" alt="Byte the wolfdog - boop his nose" style="width:100%; height:100%; object-fit:cover; object-position:center 32%; display:block;">
                   </span>
                 </span>
               </button>

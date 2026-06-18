@@ -1,4 +1,4 @@
-/* POST /api/boops — increments global boop counter by `delta`.
+/* POST /api/boops - increments global boop counter by `delta`.
  * Client batches boops into a single sendBeacon call, so invocations stay low.
  * KV write rate: 1/2s debounce on client means at most ~1 write per visitor session. */
 export default defineEventHandler(async (event) => {
