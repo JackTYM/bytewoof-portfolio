@@ -325,19 +325,22 @@ onUnmounted(() => {
     </form>
 
     <!-- entries -->
-    <div style="display:flex; flex-direction:column; gap:10px; max-height:208px; overflow:auto;">
+    <div style="display:flex; flex-direction:column; gap:12px; max-height:420px; overflow:auto;">
       <div
         v-for="entry in entries"
         :key="entry.id"
-        style="border-top:2px dashed var(--line-hairline); padding-top:9px; display:flex; gap:10px; align-items:flex-start;"
+        style="border-top:2px dashed var(--line-hairline); padding-top:10px;"
       >
-        <span v-if="entry.doodle" style="flex:none; width:58px; height:44px; border:2px solid var(--line-ink); border-radius:8px; overflow:hidden; background:#FFF8EE;">
-          <img :src="entry.doodle" :alt="`doodle by ${entry.name}`" style="width:100%; height:100%; object-fit:contain; display:block;">
-        </span>
-        <span style="min-width:0;">
+        <div style="margin-bottom:6px;">
           <span style="font-family:var(--font-mono); font-weight:700; font-size:12.5px; color:var(--text-link);">{{ entry.name }}</span>
           <span style="font-size:13.5px; color:var(--text-body);"> — {{ entry.message }}</span>
-        </span>
+        </div>
+        <img
+          v-if="entry.doodle"
+          :src="entry.doodle"
+          :alt="`doodle by ${entry.name}`"
+          style="width:100%; border:2px solid var(--line-ink); border-radius:10px; background:#FFF8EE; display:block; image-rendering:pixelated;"
+        >
       </div>
     </div>
   </div>
