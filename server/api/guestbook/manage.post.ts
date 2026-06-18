@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const adminToken = env?.GUESTBOOK_ADMIN_TOKEN
   const kv: KVNamespace | undefined = event.context.cloudflare?.env?.BOOPS_KV
 
-  const raw = await readRawBody(event, false) as string ?? ''
+  const raw = await readRawBody(event, 'utf-8') ?? ''
   const params = new URLSearchParams(raw)
   const token = params.get('token') ?? ''
   const index = parseInt(params.get('index') ?? '', 10)

@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const secret = env?.GUESTBOOK_SIGNING_SECRET
   const kv: KVNamespace | undefined = event.context.cloudflare?.env?.BOOPS_KV
 
-  const raw = await readRawBody(event, false) as string ?? ''
+  const raw = await readRawBody(event, 'utf-8') ?? ''
   const params = new URLSearchParams(raw)
   const id = params.get('id') ?? ''
   const sig = params.get('sig') ?? ''
