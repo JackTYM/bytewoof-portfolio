@@ -15,6 +15,11 @@ useHead({
     { name: 'description', content: 'byte · night-owl wolfdog software engineer · portfolio' },
     { property: 'og:title', content: 'byte — wolfdog swe' },
     { property: 'og:description', content: 'i build things and stay up too late. wolfdog, software engineer, shy at first but i warm up fast.' },
+    { property: 'og:image', content: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/og.webp' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/og.webp' },
   ],
 })
 </script>
