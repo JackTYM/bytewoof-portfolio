@@ -14,10 +14,11 @@ let overlayCtx: CanvasRenderingContext2D | null = null
 let drew = false
 let doodleCleanup: (() => void) | null = null
 
-const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A', '#FFFFFF']
+const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
 const SIZES = [{ label: 'S', w: 2 }, { label: 'M', w: 4 }, { label: 'L', w: 8 }]
 const brushSize = ref(SIZES[1].w)
+const erasing = ref(false)
 
 async function loadEntries() {
   try {
@@ -48,6 +49,7 @@ function initDoodle() {
   const down = (e: PointerEvent) => {
     drawing = true; last = pos(e)
     try { c.setPointerCapture(e.pointerId) } catch {}
+    ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
     ctx.strokeStyle = brushColor.value
     ctx.fillStyle = brushColor.value
     ctx.lineWidth = brushSize.value
@@ -58,6 +60,7 @@ function initDoodle() {
   const move = (e: PointerEvent) => {
     if (!drawing) return
     const p = pos(e)
+    ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
     ctx.strokeStyle = brushColor.value
     ctx.lineWidth = brushSize.value
     ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke()
@@ -118,6 +121,7 @@ function openZoom() {
     const down = (e: PointerEvent) => {
       drawing = true; last = pos(e)
       try { oc.setPointerCapture(e.pointerId) } catch {}
+      ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
       ctx.strokeStyle = brushColor.value
       ctx.fillStyle = brushColor.value
       ctx.lineWidth = brushSize.value + 1
@@ -128,6 +132,7 @@ function openZoom() {
     const move = (e: PointerEvent) => {
       if (!drawing) return
       const p = pos(e)
+      ctx.globalCompositeOperation = erasing.value ? 'destination-out' : 'source-over'
       ctx.strokeStyle = brushColor.value
       ctx.lineWidth = brushSize.value + 1
       ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke()
@@ -248,9 +253,9 @@ onUnmounted(() => {
           v-for="color in PALETTE"
           :key="color"
           type="button"
-          @click="brushColor = color"
+          @click="brushColor = color; erasing = false"
           :aria-label="`draw in ${color}`"
-          :style="`width:20px; height:20px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:${color === '#FFFFFF' ? '2px solid var(--line-soft)' : '2px solid transparent'}; outline:${brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
+          :style="`width:20px; height:20px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
         ></button>
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
         <button
@@ -260,6 +265,13 @@ onUnmounted(() => {
           @click="brushSize = sz.w"
           :style="`min-width:28px; height:22px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${brushSize === sz.w ? 'var(--cream-100)' : 'var(--text-muted)'};`"
         >{{ sz.label }}</button>
+        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
+        <button
+          type="button"
+          @click="erasing = !erasing"
+          aria-label="eraser"
+          :style="`min-width:28px; height:22px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${erasing ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${erasing ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >⌫</button>
       </div>
 
       <!-- full-screen doodle overlay -->
@@ -277,9 +289,9 @@ onUnmounted(() => {
                 v-for="color in PALETTE"
                 :key="color"
                 type="button"
-                @click="brushColor = color"
+                @click="brushColor = color; erasing = false"
                 :aria-label="`draw in ${color}`"
-                :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:${color === '#FFFFFF' ? '2px solid rgba(255,255,255,.4)' : '2px solid transparent'}; outline:${brushColor === color ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
+                :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px;`"
               ></button>
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
               <button
@@ -289,6 +301,12 @@ onUnmounted(() => {
                 @click="brushSize = sz.w"
                 :style="`min-width:28px; height:24px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${brushSize === sz.w ? '#FFF8EE' : 'transparent'}; color:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--cream-100)'};`"
               >{{ sz.label }}</button>
+              <button
+                type="button"
+                @click="erasing = !erasing"
+                aria-label="eraser"
+                :style="`min-width:28px; height:24px; padding:0 7px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${erasing ? '#FFF8EE' : 'transparent'}; color:${erasing ? 'var(--ink-950)' : 'var(--cream-100)'};`"
+              >⌫</button>
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
               <button
                 type="button"
