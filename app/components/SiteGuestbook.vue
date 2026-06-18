@@ -291,28 +291,18 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         </button>
       </div>
 
-      <!-- toolbar -->
+      <!-- toolbar row 1: colors -->
       <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
-        <!-- canvas ratio -->
-        <button
-          v-for="r in CANVAS_RATIOS" :key="r.label"
-          type="button"
-          @click="canvasRatio = r.value"
-          :style="`min-width:30px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:6px; border:2px solid var(--line-ink); background:${canvasRatio === r.value ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${canvasRatio === r.value ? 'var(--cream-100)' : 'var(--text-muted)'};`"
-        >{{ r.label }}</button>
-
-        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
-
         <!-- palette swatches -->
         <button
           v-for="color in PALETTE" :key="color"
           type="button"
           @click="brushColor = color; erasing = false"
           :aria-label="`draw in ${color}`"
-          :style="`width:20px; height:20px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
+          :style="`width:22px; height:22px; flex:none; border-radius:50%; background:${color}; cursor:pointer; border:2px solid transparent; outline:${!erasing && brushColor === color ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px;`"
         ></button>
         <!-- custom color picker swatch -->
-        <div style="position:relative; width:20px; height:20px; flex:none;">
+        <div style="position:relative; width:22px; height:22px; flex:none;">
           <input
             type="color"
             :value="brushColor"
@@ -325,6 +315,17 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
             :style="`position:absolute; inset:0; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; border:2px solid var(--line-soft); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid var(--line-ink)' : 'none'}; outline-offset:2px; pointer-events:none;`"
           ></span>
         </div>
+      </div>
+
+      <!-- toolbar row 2: tools -->
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
+        <!-- canvas ratio -->
+        <button
+          v-for="r in CANVAS_RATIOS" :key="r.label"
+          type="button"
+          @click="canvasRatio = r.value"
+          :style="`min-width:30px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:6px; border:2px solid var(--line-ink); background:${canvasRatio === r.value ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${canvasRatio === r.value ? 'var(--cream-100)' : 'var(--text-muted)'};`"
+        >{{ r.label }}</button>
 
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
 
@@ -343,7 +344,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           type="range" min="0.05" max="1" step="0.05"
           v-model.number="brushOpacity"
           aria-label="opacity"
-          style="width:56px; cursor:pointer; accent-color:var(--byte-blue); flex:none;"
+          style="width:60px; cursor:pointer; accent-color:var(--byte-blue); flex:none;"
         >
 
         <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
