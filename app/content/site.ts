@@ -145,7 +145,7 @@ export const GALLERY: GalleryItem[] = [
   {
     slug: 'byte-puppified',
     src: `${R2}/byte-puppified.webp`,
-    title: 'puppified',
+    title: 'Puppy Pride YCH',
     credit: '14pup',
     creditUrl: 'https://x.com/14pup_',
   },
@@ -159,14 +159,14 @@ export const GALLERY: GalleryItem[] = [
   {
     slug: 'byte-hug',
     src: `${R2}/byte-hug.webp`,
-    title: 'hug',
+    title: 'Waiting For Moment YCH',
     credit: 'velvetbun',
     creditUrl: 'https://x.com/Velvetbun16',
   },
   {
     slug: 'byte-bellyrub',
     src: `${R2}/byte-bellyrub.webp`,
-    title: 'belly rub',
+    title: 'Belly Rub YCH',
     credit: 'kiro',
     creditUrl: 'https://x.com/fenneckiro',
     alts: [{ src: `${R2}/byte-bellyrub-nsfw.webp`, nsfw: true }],
@@ -174,7 +174,7 @@ export const GALLERY: GalleryItem[] = [
   {
     slug: 'byte-footjob',
     src: `${R2}/byte-footjob-1.webp`,
-    title: 'footjob ych',
+    title: 'Pawjob YCH',
     credit: 'zanky',
     creditUrl: 'https://x.com/zankydoggy',
     nsfw: true,
@@ -186,6 +186,13 @@ export const GALLERY: GalleryItem[] = [
       { src: `${R2}/byte-footjob-6.webp` },
       { src: `${R2}/byte-footjob-7.webp` },
     ],
+  },
+  {
+    slug: 'byte-livevibrantly',
+    src: `${R2}/byte-livevibrantly.webp`,
+    title: 'Live Vibrantly YCH',
+    credit: 'Kaiju',
+    creditUrl: 'https://www.instagram.com/kaiju_commissions611',
   },
 ]
 
