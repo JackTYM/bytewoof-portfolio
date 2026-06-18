@@ -48,6 +48,8 @@ export default defineEventHandler(async (event) => {
 
   return new Response(`<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/favicon.ico">
 <title>guestbook management — byte</title>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#1a1a1a;color:#f0dcc4;padding:32px 20px;max-width:620px;margin:0 auto}h1{font-size:22px;font-weight:800;margin-bottom:6px}p.sub{color:#8a7461;font-size:13px;margin-bottom:24px}</style>
 </head><body>

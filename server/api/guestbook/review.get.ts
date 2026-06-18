@@ -6,6 +6,8 @@ function html(title: string, body: string, status = 200) {
   return new Response(
     `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/favicon.ico">
 <title>${title} — byte guestbook</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
