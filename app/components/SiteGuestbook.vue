@@ -11,12 +11,10 @@ const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
 const zoomed = ref(false)
 let drew = false
 
-const CANVAS_RATIOS = [{ label: '4:3', value: '4/3' }, { label: '16:9', value: '16/9' }]
-const canvasRatio = ref('4/3')
+const canvasRatio = '4/3'
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
-const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
-const brushSize = ref(SIZES[1].w)
+const brushSize = ref(10)
 const brushOpacity = ref(1)
 const erasing = ref(false)
 const smoothing = ref(true)
@@ -149,7 +147,7 @@ function initDoodle() {
   if (!c) return
   const w = Math.round(c.getBoundingClientRect().width)
   if (w < 2) { setTimeout(initDoodle, 250); return }
-  const result = setupDrawing(c, null, ratioH(w, canvasRatio.value))
+  const result = setupDrawing(c, null, ratioH(w, canvasRatio))
   if (!result) { setTimeout(initDoodle, 250); return }
   mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
   drew = false
@@ -222,22 +220,6 @@ async function signGuest(e: Event) {
   } catch {}
 }
 
-watch(canvasRatio, () => {
-  const c = canvasRef.value
-  if (!c) return
-  const snapshot = drew && mainCtx ? c.toDataURL() : null
-  if (mainCleanup) { mainCleanup(); mainCleanup = null }
-  const w = Math.round(c.getBoundingClientRect().width)
-  const h = ratioH(w, canvasRatio.value)
-  const result = setupDrawing(c, null, h)
-  if (!result) return
-  mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
-  if (snapshot) {
-    const img = new Image()
-    img.onload = () => { mainCtx!.drawImage(img, 0, 0, w, h) }
-    img.src = snapshot
-  }
-})
 
 onMounted(() => { loadEntries(); initDoodle() })
 onUnmounted(() => { if (mainCleanup) mainCleanup() })
@@ -277,7 +259,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         <canvas
           ref="canvasRef"
           aria-label="draw an optional doodle"
-          :style="`width:100%; aspect-ratio:${canvasRatio}; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;`"
+          style="width:100%; aspect-ratio:4/3; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;"
         ></canvas>
         <button
           type="button"
@@ -320,26 +302,6 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
 
       <!-- toolbar row 2: tools -->
       <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; padding:2px 0;">
-        <!-- canvas ratio -->
-        <button
-          v-for="r in CANVAS_RATIOS" :key="r.label"
-          type="button"
-          @click="canvasRatio = r.value"
-          :style="`min-width:30px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:10px; border-radius:6px; border:2px solid var(--line-ink); background:${canvasRatio === r.value ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${canvasRatio === r.value ? 'var(--cream-100)' : 'var(--text-muted)'};`"
-        >{{ r.label }}</button>
-
-        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
-
-        <!-- size -->
-        <button
-          v-for="sz in SIZES" :key="sz.label"
-          type="button"
-          @click="brushSize = sz.w"
-          :style="`min-width:26px; height:22px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:6px; border:2px solid var(--line-ink); background:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--surface-card)'}; color:${brushSize === sz.w ? 'var(--cream-100)' : 'var(--text-muted)'};`"
-        >{{ sz.label }}</button>
-
-        <span style="width:1px; height:16px; flex:none; background:var(--line-hairline); margin:0 2px;"></span>
-
         <!-- opacity -->
         <input
           type="range" min="0.05" max="1" step="0.05"
@@ -410,16 +372,6 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
                   :style="`position:absolute; inset:0; border-radius:50%; background:${!PALETTE.includes(brushColor) && !erasing ? brushColor : 'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)'}; border:2px solid rgba(255,255,255,.3); outline:${!erasing && !PALETTE.includes(brushColor) ? '2.5px solid #FFF8EE' : 'none'}; outline-offset:2px; pointer-events:none;`"
                 ></span>
               </div>
-
-              <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
-
-              <!-- size -->
-              <button
-                v-for="sz in SIZES" :key="sz.label"
-                type="button"
-                @click="brushSize = sz.w"
-                :style="`min-width:26px; height:24px; padding:0 6px; cursor:pointer; font-family:var(--font-mono); font-weight:700; font-size:11px; border-radius:7px; border:2px solid rgba(255,255,255,.3); background:${brushSize === sz.w ? '#FFF8EE' : 'transparent'}; color:${brushSize === sz.w ? 'var(--ink-950)' : 'var(--cream-100)'};`"
-              >{{ sz.label }}</button>
 
               <span style="width:1px; height:16px; flex:none; background:rgba(255,255,255,.2); margin:0 2px;"></span>
 
