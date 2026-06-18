@@ -33,3 +33,7 @@ logs
 
 # Generated lockfile — npm version mismatch with CF Pages
 package-lock.json
+
+# Images — stored in R2, not git
+public/*.webp
+public/**/*.webp

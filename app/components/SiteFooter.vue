@@ -7,7 +7,7 @@ const { motionOn, toggle: toggleMotion } = useMotion()
     <div style="max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:18px;">
       <div style="display:flex; align-items:center; gap:12px;">
         <span style="width:42px; height:42px; flex:none; border-radius:50%; overflow:hidden; border:2.5px solid var(--line-ink); background:#FFF8EE; box-shadow:2.5px 2.5px 0 var(--line-ink);">
-          <img :src="'/byte-icon.webp'" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;">
+          <img :src="'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-icon.webp'" alt="" style="width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;">
         </span>
         <div>
           <div style="font-family:var(--font-display); font-weight:800; font-size:18px; color:var(--text-strong); line-height:1;">byte</div>

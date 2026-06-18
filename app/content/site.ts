@@ -116,7 +116,7 @@ export interface GalleryItem {
 export const GALLERY: GalleryItem[] = [
   {
     slug: 'byte-bust',
-    src: '/gallery/byte-bust.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-bust.webp',
     title: 'bust',
     desc: 'a clean bust commission.',
     credit: 'artist — add handle', // TODO: real value
@@ -124,7 +124,7 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     slug: 'byte-icon',
-    src: '/gallery/byte-icon.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-icon.webp',
     title: 'happy icon',
     desc: 'round chibi icon commission.',
     credit: 'artist — add handle', // TODO: real value
@@ -132,7 +132,7 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     slug: 'byte-lick',
-    src: '/gallery/byte-lick.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-lick.webp',
     title: 'blep / lick',
     desc: 'a big ol\' blep.',
     credit: 'artist — add handle', // TODO: real value
@@ -140,7 +140,7 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     slug: 'byte-puppified',
-    src: '/gallery/byte-puppified.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-puppified.webp',
     title: 'puppified',
     desc: 'full pup mode.',
     credit: 'artist — add handle', // TODO: real value
@@ -148,7 +148,7 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     slug: 'byte-hug',
-    src: '/gallery/byte-hug.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-hug.webp',
     title: 'cozy hug',
     desc: 'boyfriend hug commission — velvetbun · 2022.',
     credit: 'velvetbun', // TODO: real value — add handle
@@ -156,7 +156,7 @@ export const GALLERY: GalleryItem[] = [
   },
   {
     slug: 'byte-refsheet',
-    src: '/gallery/byte-refsheet.webp',
+    src: 'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-refsheet.webp',
     title: 'ref sheet',
     desc: 'the official reference sheet.',
     credit: 'artist — add handle', // TODO: real value

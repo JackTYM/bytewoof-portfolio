@@ -122,7 +122,7 @@ const STAR_PATH = 'M12 2L14.35 8.76L21.51 8.91L15.8 13.24L17.88 20.09L12 16L6.12
         <!-- avatar + h1 -->
         <div style="display:flex; align-items:center; gap:18px; margin:20px 0 4px;">
           <span style="width:74px; height:74px; flex:none; border-radius:50%; overflow:hidden; border:3px solid #211309; box-shadow:3px 3px 0 var(--line-ink); background:#FFF8EE;">
-            <img :src="'/byte-bust.webp'" alt="Byte, a brown wolfdog with glasses, a blue heart-tag collar and green eyes" style="width:100%; height:100%; object-fit:cover; display:block;">
+            <img :src="'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-bust.webp'" alt="Byte, a brown wolfdog with glasses, a blue heart-tag collar and green eyes" style="width:100%; height:100%; object-fit:cover; display:block;">
           </span>
           <h1 style="font-family:var(--font-display); font-weight:800; font-size:clamp(40px,8vw,64px); line-height:.98; letter-spacing:-.03em; color:#FFF8EE; margin:0; text-shadow:0 2px 14px rgba(40,18,42,.35);">hi, i'm byte.</h1>
         </div>
@@ -201,7 +201,7 @@ const STAR_PATH = 'M12 2L14.35 8.76L21.51 8.91L15.8 13.24L17.88 20.09L12 16L6.12
               >
                 <span style="display:block; width:clamp(160px,46vw,210px); height:clamp(160px,46vw,210px); border-radius:50%; overflow:hidden; border:3px solid #211309; box-shadow:5px 5px 0 var(--line-ink); background:#FFFFFF;">
                   <span data-byte-face data-loop :key="boopAnimKey" style="position:relative; display:block; width:108%; height:108%; margin:-4%;">
-                    <img :src="'/byte-icon.webp'" alt="Byte the wolfdog — boop his nose" style="width:100%; height:100%; object-fit:cover; object-position:center 32%; display:block;">
+                    <img :src="'https://pub-8482f0874bc248dfb8fc7f497fabfd48.r2.dev/gallery/byte-icon.webp'" alt="Byte the wolfdog — boop his nose" style="width:100%; height:100%; object-fit:cover; object-position:center 32%; display:block;">
                   </span>
                 </span>
               </button>
