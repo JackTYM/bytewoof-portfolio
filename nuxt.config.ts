@@ -22,6 +22,7 @@ export default defineNuxtConfig({
 
   sitemap: {
     exclude: ['/api/**'],
+    sources: ['/api/__sitemap__/urls'],
   },
 
   schemaOrg: {
