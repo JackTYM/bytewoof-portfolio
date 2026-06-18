@@ -49,14 +49,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const entry = JSON.parse(raw) as { name: string; message: string; doodle?: string; ts: number }
-  const encId = encodeURIComponent(id)
-  const encSig = encodeURIComponent(sig)
-
   const doodleHtml = entry.doodle
     ? `<div class="field"><div class="label">doodle</div><img src="${entry.doodle}" alt="doodle"></div>`
     : ''
 
-  const formField = `<input type="hidden" name="id" value="${encId}"><input type="hidden" name="sig" value="${encSig}">`
+  const formField = `<input type="hidden" name="id" value="${escHtml(id)}"><input type="hidden" name="sig" value="${escHtml(sig)}">`
 
   return html('review entry', `
     <h1>review guestbook entry</h1>
