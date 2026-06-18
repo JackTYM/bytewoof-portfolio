@@ -30,3 +30,6 @@ logs
 
 # Claude Code workspace
 .claude
+
+# Generated lockfile — npm version mismatch with CF Pages
+package-lock.json
