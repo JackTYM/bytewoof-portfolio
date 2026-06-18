@@ -11,8 +11,8 @@ const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
 const zoomed = ref(false)
 let drew = false
 
-const CANVAS_RATIOS = [{ label: '1:1', value: '1' }, { label: '4:3', value: '4/3' }, { label: '16:9', value: '16/9' }]
-const canvasRatio = ref('1')
+const CANVAS_RATIOS = [{ label: '4:3', value: '4/3' }, { label: '16:9', value: '16/9' }]
+const canvasRatio = ref('4/3')
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
 const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
@@ -44,9 +44,15 @@ function getSvgPath(pts: number[][]): string {
   return d.join(' ')
 }
 
-function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null) {
+function ratioH(w: number, ratio: string): number {
+  const [a, b] = ratio.split('/').map(Number)
+  return b ? Math.round(w * b / a) : w
+}
+
+function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null, forceH?: number) {
   const rect = c.getBoundingClientRect()
-  const w = Math.round(rect.width), h = Math.round(rect.height)
+  const w = Math.round(rect.width)
+  const h = forceH ?? Math.round(rect.height)
   if (w < 2 || h < 2) return null
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -140,7 +146,9 @@ function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null)
 function initDoodle() {
   const c = canvasRef.value
   if (!c) return
-  const result = setupDrawing(c)
+  const w = Math.round(c.getBoundingClientRect().width)
+  if (w < 2) { setTimeout(initDoodle, 250); return }
+  const result = setupDrawing(c, null, ratioH(w, canvasRatio.value))
   if (!result) { setTimeout(initDoodle, 250); return }
   mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
   drew = false
@@ -214,21 +222,20 @@ async function signGuest(e: Event) {
 }
 
 watch(canvasRatio, () => {
-  nextTick(() => {
-    if (mainCleanup) { mainCleanup(); mainCleanup = null }
-    const c = canvasRef.value
-    if (!c) return
-    // preserve existing drawing
-    const snapshot = mainCtx ? c.toDataURL() : null
-    const result = setupDrawing(c)
-    if (!result) return
-    mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
-    if (snapshot && drew) {
-      const img = new Image()
-      img.onload = () => { mainCtx!.drawImage(img, 0, 0, c.offsetWidth, c.offsetHeight) }
-      img.src = snapshot
-    }
-  })
+  const c = canvasRef.value
+  if (!c) return
+  const snapshot = drew && mainCtx ? c.toDataURL() : null
+  if (mainCleanup) { mainCleanup(); mainCleanup = null }
+  const w = Math.round(c.getBoundingClientRect().width)
+  const h = ratioH(w, canvasRatio.value)
+  const result = setupDrawing(c, null, h)
+  if (!result) return
+  mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
+  if (snapshot) {
+    const img = new Image()
+    img.onload = () => { mainCtx!.drawImage(img, 0, 0, w, h) }
+    img.src = snapshot
+  }
 })
 
 onMounted(() => { loadEntries(); initDoodle() })
