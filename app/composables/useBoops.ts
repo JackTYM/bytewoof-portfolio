@@ -1,13 +1,6 @@
-/* Boop counter — real KV-backed global total.
- * Strategy:
- *   - localStorage cache { total, ts } with 1h TTL to avoid re-hitting the edge
- *   - Optimistic local increments; batched flush via sendBeacon after 2s idle
- *   - bytesLabel uses binary units (KiB, MiB, GiB) matching the design
- */
-
 const CACHE_KEY = 'byte.boops'
-const CACHE_TTL = 3_600_000 // 1 hour in ms
-const FLUSH_DELAY = 2_000   // 2 seconds
+const CACHE_TTL = 3_600_000
+const FLUSH_DELAY = 2_000
 
 export function useBoops() {
   const total = useState<number>('boops.total', () => 0)
@@ -35,17 +28,17 @@ export function useBoops() {
     flushTimer = setTimeout(flush, FLUSH_DELAY)
   }
 
-  function flush() {
+  async function flush() {
     if (localDelta.value <= 0) return
     const delta = localDelta.value
     localDelta.value = 0
-    const body = JSON.stringify({ delta })
-    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-      const blob = new Blob([body], { type: 'application/json' })
-      navigator.sendBeacon('/api/boops', blob)
-    } else {
-      $fetch('/api/boops', { method: 'POST', body: { delta } }).catch(() => {})
-    }
+    try {
+      const data = await $fetch<{ total: number }>('/api/boops', { method: 'POST', body: { delta } })
+      total.value = data.total
+      if (import.meta.client) {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ total: data.total, ts: Date.now() }))
+      }
+    } catch { /* offline — delta is lost, not worth retrying */ }
   }
 
   /** Binary (1024) unit label — B / KiB / MiB / GiB */
@@ -71,7 +64,7 @@ export function useBoops() {
     fetchTotal()
   })
 
-  onBeforeUnmount(flush)
+  onBeforeUnmount(() => { flush() })
 
   return { total, boop, bytesLabel }
 }
