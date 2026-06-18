@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { GUESTBOOK_DEFAULTS, type GuestEntry } from '~/content/site'
+import type { GuestEntry } from '~/content/site'
 
-const entries = ref<GuestEntry[]>(GUESTBOOK_DEFAULTS)
+const entries = ref<GuestEntry[]>([])
 const name = ref('')
 const msg = ref('')
 const pending = ref(false)
@@ -22,7 +22,7 @@ const brushSize = ref(SIZES[1].w)
 async function loadEntries() {
   try {
     const data = await $fetch<GuestEntry[]>('/api/guestbook')
-    if (data.length) entries.value = data
+    entries.value = data
   } catch {}
 }
 

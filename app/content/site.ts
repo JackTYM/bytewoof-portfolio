@@ -110,7 +110,6 @@ export interface GalleryItem {
   desc: string
   credit: string
   creditUrl: string // TODO: real value — artist profile / YCH link
-  seedLikes: number
   nsfw?: boolean
 }
 
@@ -122,7 +121,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'a clean bust commission.',
     credit: 'artist — add handle', // TODO: real value
     creditUrl: '#', // TODO: real value
-    seedLikes: 214,
   },
   {
     slug: 'byte-icon',
@@ -131,7 +129,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'round chibi icon commission.',
     credit: 'artist — add handle', // TODO: real value
     creditUrl: '#', // TODO: real value
-    seedLikes: 480,
   },
   {
     slug: 'byte-lick',
@@ -140,7 +137,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'a big ol\' blep.',
     credit: 'artist — add handle', // TODO: real value
     creditUrl: '#', // TODO: real value
-    seedLikes: 327,
   },
   {
     slug: 'byte-puppified',
@@ -149,7 +145,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'full pup mode.',
     credit: 'artist — add handle', // TODO: real value
     creditUrl: '#', // TODO: real value
-    seedLikes: 612,
   },
   {
     slug: 'byte-hug',
@@ -158,7 +153,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'boyfriend hug commission — velvetbun · 2022.',
     credit: 'velvetbun', // TODO: real value — add handle
     creditUrl: '#', // TODO: real value
-    seedLikes: 905,
   },
   {
     slug: 'byte-refsheet',
@@ -167,7 +161,6 @@ export const GALLERY: GalleryItem[] = [
     desc: 'the official reference sheet.',
     credit: 'artist — add handle', // TODO: real value
     creditUrl: '#', // TODO: real value
-    seedLikes: 158,
   },
 ]
 
@@ -223,9 +216,3 @@ export interface GuestEntry {
   doodle?: string
   ts: number
 }
-
-export const GUESTBOOK_DEFAULTS: GuestEntry[] = [
-  { id: 'default-1', name: 'pixelfox', message: 'cute site!! booped you like 10 times 🐾',    ts: 0 },
-  { id: 'default-2', name: 'rootkit',  message: 'the terminal block is so you lol',             ts: 0 },
-  { id: 'default-3', name: 'mossy',    message: 'tapped your card at the con — saved!',          ts: 0 },
-]

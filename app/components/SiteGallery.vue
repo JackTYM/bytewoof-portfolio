@@ -2,9 +2,7 @@
 import { GALLERY, type GalleryItem } from '~/content/site'
 
 const openSlug = ref<string | null>(null)
-const likes = ref<Record<string, number>>(
-  Object.fromEntries(GALLERY.map(g => [g.slug, g.seedLikes]))
-)
+const likes = ref<Record<string, number>>({})
 const likedSlugs = ref<Set<string>>(new Set())
 
 // NSFW gate
