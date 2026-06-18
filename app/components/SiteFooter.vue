@@ -11,7 +11,7 @@ const { motionOn, toggle: toggleMotion } = useMotion()
         </span>
         <div>
           <div style="font-family:var(--font-display); font-weight:800; font-size:18px; color:var(--text-strong); line-height:1;">byte</div>
-          <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-top:3px;">made at 2am when i should be asleep · sfw · © byte</div>
+          <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted); margin-top:3px;">made at 2am when i should be asleep</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px;">
