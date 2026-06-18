@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const token = params.get('token') ?? ''
   const index = parseInt(params.get('index') ?? '', 10)
 
-  if (!adminToken || token !== adminToken) {
+  if (!adminToken || token !== adminToken.trim()) {
     return new Response('<h1>unauthorized</h1>', { status: 401, headers: { 'Content-Type': 'text/html' } })
   }
 

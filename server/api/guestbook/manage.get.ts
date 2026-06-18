@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const adminToken = env?.GUESTBOOK_ADMIN_TOKEN
   const { token } = getQuery(event) as { token?: string }
 
-  if (!adminToken || !token || token !== adminToken) {
+  if (!adminToken || !token || token !== adminToken.trim()) {
     return new Response('<h1>unauthorized</h1>', { status: 401, headers: { 'Content-Type': 'text/html' } })
   }
 
