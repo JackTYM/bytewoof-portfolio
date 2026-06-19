@@ -41,12 +41,12 @@ export function useBoops() {
     } catch { /* offline - delta is lost, not worth retrying */ }
   }
 
-  /** Binary (1024) unit label - B / KiB / MiB / GiB */
+  /** Decimal (1000) unit label - B / kB / MB / GB */
   function bytesLabel(n: number): string {
-    if (n < 1024)                 return `${n} B`
-    if (n < 1024 * 1024)          return `${(n / 1024).toFixed(1)} KiB`
-    if (n < 1024 * 1024 * 1024)   return `${(n / 1024 / 1024).toFixed(2)} MiB`
-    return `${(n / 1024 / 1024 / 1024).toFixed(2)} GiB`
+    if (n < 1000)             return `${n} B`
+    if (n < 1_000_000)        return `${(n / 1000).toFixed(1)} kB`
+    if (n < 1_000_000_000)    return `${(n / 1_000_000).toFixed(2)} MB`
+    return `${(n / 1_000_000_000).toFixed(2)} GB`
   }
 
   onMounted(() => {
