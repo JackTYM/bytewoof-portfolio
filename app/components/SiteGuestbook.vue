@@ -11,7 +11,6 @@ const overlayCanvasRef = ref<HTMLCanvasElement | null>(null)
 const zoomed = ref(false)
 let drew = false
 
-const canvasRatio = '4/3'
 const PALETTE = ['#3AA0DA', '#E2557B', '#E8A33D', '#3FB27A', '#7A5CD0', '#2A2A2A']
 const brushColor = ref(PALETTE[0])
 const SIZES = [{ label: 'S', w: 4 }, { label: 'M', w: 10 }, { label: 'L', w: 20 }]
@@ -43,11 +42,6 @@ function getSvgPath(pts: number[][]): string {
   }
   d.push('Z')
   return d.join(' ')
-}
-
-function ratioH(w: number, ratio: string): number {
-  const [a, b] = ratio.split('/').map(Number)
-  return b ? Math.round(w * b / a) : w
 }
 
 function floodFill(ctx: CanvasRenderingContext2D, cssX: number, cssY: number, hex: string, opacity: number, dpr: number) {
@@ -188,9 +182,7 @@ function setupDrawing(c: HTMLCanvasElement, copyFrom?: HTMLCanvasElement | null,
 function initDoodle() {
   const c = canvasRef.value
   if (!c) return
-  const w = Math.round(c.getBoundingClientRect().width)
-  if (w < 2) { setTimeout(initDoodle, 250); return }
-  const result = setupDrawing(c, null, ratioH(w, canvasRatio))
+  const result = setupDrawing(c, null)
   if (!result) { setTimeout(initDoodle, 250); return }
   mainCtx = result.ctx; mainOff = result.off; mainCleanup = result.cleanup
   drew = false
@@ -302,7 +294,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
         <canvas
           ref="canvasRef"
           aria-label="draw an optional doodle"
-          style="width:100%; aspect-ratio:4/3; max-height:260px; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;"
+          style="width:min(100%, 347px); aspect-ratio:4/3; border:2.5px dashed var(--line-soft); border-radius:11px; background:#FFFCF6; touch-action:none; cursor:crosshair; display:block;"
         ></canvas>
         <button
           type="button"
@@ -513,7 +505,7 @@ onUnmounted(() => { if (mainCleanup) mainCleanup() })
           <canvas
             ref="overlayCanvasRef"
             aria-label="full-screen drawing canvas"
-            style="display:block; width:min(100%,calc(100vh - 140px)); aspect-ratio:1; align-self:center; flex:none; border:2.5px dashed rgba(255,255,255,.2); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;"
+            style="display:block; width:min(100%,calc((100vh - 140px) / 0.75)); aspect-ratio:4/3; align-self:center; flex:none; border:2.5px dashed rgba(255,255,255,.2); border-radius:14px; background:#FFFCF6; touch-action:none; cursor:crosshair;"
           ></canvas>
         </div>
       </Teleport>
