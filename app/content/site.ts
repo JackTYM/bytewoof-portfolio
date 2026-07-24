@@ -194,6 +194,22 @@ export const GALLERY: GalleryItem[] = [
     credit: 'Kaiju',
     creditUrl: 'https://www.instagram.com/kaiju_commissions611',
   },
+  {
+    slug: 'byte-goodboy',
+    src: `${R2}/byte-goodboy.webp`,
+    title: 'Good Boy',
+    credit: 'Deastratit',
+    creditUrl: 'https://x.com/deastratit',
+  },
+  {
+    slug: 'byte-ravepop',
+    src: `${R2}/byte-ravepop.webp`,
+    title: 'Ravepop Drawover',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/birdieboylover',
+    creditNsfw: true,
+    nsfw: true,
+  },
 ]
 
 // --------------- CONS ---------------

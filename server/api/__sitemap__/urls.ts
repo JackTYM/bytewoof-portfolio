@@ -12,6 +12,7 @@ export default defineEventHandler(() => {
         { loc: `${R2}/byte-hug.webp`,           title: 'Waiting For Moment YCH', caption: 'Waiting For Moment YCH by velvetbun' },
         { loc: `${R2}/byte-bellyrub.webp`,      title: 'Belly Rub YCH',         caption: 'Belly Rub YCH by kiro' },
         { loc: `${R2}/byte-livevibrantly.webp`, title: 'Live Vibrantly YCH',    caption: 'Live Vibrantly YCH by Kaiju' },
+        { loc: `${R2}/byte-goodboy.webp`,       title: 'Good Boy',              caption: 'Good Boy by Deastratit' },
       ],
     },
   ]
