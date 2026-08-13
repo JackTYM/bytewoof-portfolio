@@ -296,6 +296,17 @@ onMounted(() => {
                 style="font-family:var(--font-mono); font-size:9px; padding:2px 5px; border:1.5px solid #B45309; border-radius:999px; color:#B45309; background:rgba(251,191,36,.15);"
               >18+</span>
             </div>
+            <div v-if="openItem.baseCredit" style="font-family:var(--font-mono); font-size:12px; color:#8A7461; margin-top:4px; display:flex; align-items:center; gap:6px;">
+              base by
+              <a :href="openItem.baseCreditUrl" target="_blank" rel="noopener" style="color:#8A7461; font-weight:700;">{{ openItem.baseCredit }}</a>
+            </div>
+            <a
+              v-if="openItem.packUrl"
+              :href="openItem.packUrl"
+              target="_blank"
+              rel="noopener"
+              style="display:inline-flex; align-items:center; gap:6px; margin-top:14px; padding:9px 16px; cursor:pointer; font-family:var(--font-body); font-weight:800; font-size:13px; text-decoration:none; border:2.5px solid #211309; border-radius:12px; background:#2AABEE; color:#06283A; box-shadow:2.5px 2.5px 0 #211309;"
+            >{{ openItem.packLabel ?? 'view pack →' }}</a>
           </div>
         </div>
       </div>
