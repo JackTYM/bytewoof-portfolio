@@ -73,6 +73,11 @@ export default defineEventHandler(() => {
         { loc: `${R2}/byte-sticker-057.webp`, title: 'sticker pack', caption: 'sticker pack by Noah' },
         { loc: `${R2}/byte-sticker-058.webp`, title: 'sticker pack', caption: 'sticker pack by Noah' },
         { loc: `${R2}/byte-sticker-059.webp`, title: 'sticker pack', caption: 'sticker pack by Noah' },
+        { loc: `${R2}/byte-tinypup.webp`,   title: 'Tiny Pup',   caption: 'Tiny Pup by Noah' },
+        { loc: `${R2}/byte-portrait.webp`,  title: 'Portrait',   caption: 'Portrait by Noah' },
+        { loc: `${R2}/byte-isopod.webp`,    title: 'Isopod',     caption: 'Isopod by Noah' },
+        { loc: `${R2}/byte-sleepypup.webp`, title: 'Sleepy Pup', caption: 'Sleepy Pup by Noah' },
+        { loc: `${R2}/byte-spacepup.webp`,  title: 'Space Pup',  caption: 'Space Pup by Noah' },
       ],
     },
   ]

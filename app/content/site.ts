@@ -312,6 +312,46 @@ export const GALLERY: GalleryItem[] = [
       { src: `${R2}/byte-sticker-nsfw-006.webp` },
     ],
   },
+  {
+    slug: 'byte-tinypup',
+    src: `${R2}/byte-tinypup.webp`,
+    title: 'Tiny Pup',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/chirpieboy',
+    creditNsfw: true,
+  },
+  {
+    slug: 'byte-portrait',
+    src: `${R2}/byte-portrait.webp`,
+    title: 'Portrait',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/chirpieboy',
+    creditNsfw: true,
+  },
+  {
+    slug: 'byte-isopod',
+    src: `${R2}/byte-isopod.webp`,
+    title: 'Isopod',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/chirpieboy',
+    creditNsfw: true,
+  },
+  {
+    slug: 'byte-sleepypup',
+    src: `${R2}/byte-sleepypup.webp`,
+    title: 'Sleepy Pup',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/chirpieboy',
+    creditNsfw: true,
+  },
+  {
+    slug: 'byte-spacepup',
+    src: `${R2}/byte-spacepup.webp`,
+    title: 'Space Pup',
+    credit: 'Noah',
+    creditUrl: 'https://x.com/chirpieboy',
+    creditNsfw: true,
+  },
 ]
 
 // --------------- CONS ---------------
