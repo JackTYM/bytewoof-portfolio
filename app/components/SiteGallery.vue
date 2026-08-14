@@ -3,6 +3,7 @@ import { GALLERY, type GalleryItem } from '~/content/site'
 
 const openSlug = ref<string | null>(null)
 const altIndex = ref(0)
+const viewMode = ref<'grid' | 'zoom'>('grid')
 const likes = ref<Record<string, number>>({})
 const likedSlugs = ref<Set<string>>(new Set())
 
@@ -31,12 +32,16 @@ const lightboxImages = computed(() => {
 
 function open(slug: string) {
   altIndex.value = 0
+  viewMode.value = 'grid'
   openSlug.value = slug
 }
 function close() { openSlug.value = null }
 
 function prevAlt() { altIndex.value = (altIndex.value - 1 + lightboxImages.value.length) % lightboxImages.value.length }
 function nextAlt() { altIndex.value = (altIndex.value + 1) % lightboxImages.value.length }
+
+function zoomTo(i: number) { altIndex.value = i; viewMode.value = 'zoom' }
+function backToGrid() { viewMode.value = 'grid' }
 
 function toggleNsfw() {
   if (nsfwUnlocked.value) {
@@ -101,7 +106,8 @@ onMounted(() => {
   try { if (localStorage.getItem('byte.nsfw') === 'verified') nsfwUnlocked.value = true } catch {}
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { close(); showAgeGate.value = false }
-    if (openItem.value && lightboxImages.value.length > 1) {
+    const inZoom = !openItem.value?.gridView || viewMode.value === 'zoom'
+    if (openItem.value && inZoom && lightboxImages.value.length > 1) {
       if (e.key === 'ArrowLeft') prevAlt()
       if (e.key === 'ArrowRight') nextAlt()
     }
@@ -226,8 +232,19 @@ onMounted(() => {
       >
         <div
           @click.stop
-          style="position:relative; max-width:560px; width:100%; border:3px solid #211309; border-radius:24px; background:#FFF8EE; box-shadow:7px 7px 0 var(--line-ink); overflow:hidden;"
+          :style="`position:relative; max-width:${openItem.gridView && viewMode === 'grid' ? '820px' : '560px'}; width:100%; border:3px solid #211309; border-radius:24px; background:#FFF8EE; box-shadow:7px 7px 0 var(--line-ink); overflow:hidden;`"
         >
+          <!-- back to grid -->
+          <button
+            v-if="openItem.gridView && viewMode === 'zoom'"
+            type="button"
+            @click="backToGrid"
+            aria-label="back to grid"
+            style="position:absolute; top:12px; left:12px; z-index:2; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:2.5px solid #211309; border-radius:50%; background:#FFF8EE; color:#271912; box-shadow:2px 2px 0 #211309;"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+
           <!-- close -->
           <button
             type="button"
@@ -238,42 +255,63 @@ onMounted(() => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="width:18px;height:18px"><path d="M6 6l12 12M18 6L6 18"/></svg>
           </button>
 
-          <!-- image area -->
-          <div style="position:relative; background:#F3E6D2;">
-            <img :src="lightboxImages[altIndex]" :alt="openItem.title" style="width:100%; max-height:64vh; object-fit:contain; display:block;">
-
-            <!-- prev/next arrows -->
-            <template v-if="lightboxImages.length > 1">
-              <button
-                type="button"
-                @click="prevAlt"
-                aria-label="previous"
-                style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:2.5px solid #211309; border-radius:50%; background:rgba(255,248,238,.88); color:#271912; box-shadow:2px 2px 0 #211309;"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <button
-                type="button"
-                @click="nextAlt"
-                aria-label="next"
-                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:2.5px solid #211309; border-radius:50%; background:rgba(255,248,238,.88); color:#271912; box-shadow:2px 2px 0 #211309;"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </template>
-          </div>
-
-          <!-- dot indicators -->
-          <div v-if="lightboxImages.length > 1" style="display:flex; justify-content:center; gap:6px; padding:10px 20px 0; background:#FFF8EE;">
+          <!-- grid view (sticker packs) -->
+          <div
+            v-if="openItem.gridView && viewMode === 'grid'"
+            style="display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:10px; padding:24px; max-height:64vh; overflow-y:auto; background:#F3E6D2;"
+          >
             <button
-              v-for="(_, i) in lightboxImages"
-              :key="i"
+              v-for="(src, i) in lightboxImages"
+              :key="src"
               type="button"
-              @click="altIndex = i"
-              :aria-label="`view alt ${i + 1}`"
-              :style="`width:8px; height:8px; border-radius:50%; border:2px solid #211309; cursor:pointer; padding:0; transition:background .15s; background:${i === altIndex ? '#211309' : 'transparent'};`"
-            />
+              @click="zoomTo(i)"
+              :aria-label="`zoom into image ${i + 1}`"
+              style="all:unset; cursor:pointer; aspect-ratio:1/1; border:2.5px solid #211309; border-radius:12px; background:#FFF8EE; overflow:hidden; transition:transform .12s var(--ease-spring);"
+              @mouseover="hover($event.currentTarget, true)"
+              @mouseout="hover($event.currentTarget, false)"
+            >
+              <img :src="src" :alt="`${openItem.title} ${i + 1}`" loading="lazy" style="width:100%; height:100%; object-fit:contain; display:block;">
+            </button>
           </div>
+
+          <!-- single image view (everything else, and zoomed sticker) -->
+          <template v-else>
+            <div style="position:relative; background:#F3E6D2;">
+              <img :src="lightboxImages[altIndex]" :alt="openItem.title" style="width:100%; max-height:64vh; object-fit:contain; display:block;">
+
+              <!-- prev/next arrows -->
+              <template v-if="lightboxImages.length > 1">
+                <button
+                  type="button"
+                  @click="prevAlt"
+                  aria-label="previous"
+                  style="position:absolute; left:10px; top:50%; transform:translateY(-50%); width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:2.5px solid #211309; border-radius:50%; background:rgba(255,248,238,.88); color:#271912; box-shadow:2px 2px 0 #211309;"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button
+                  type="button"
+                  @click="nextAlt"
+                  aria-label="next"
+                  style="position:absolute; right:10px; top:50%; transform:translateY(-50%); width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; border:2.5px solid #211309; border-radius:50%; background:rgba(255,248,238,.88); color:#271912; box-shadow:2px 2px 0 #211309;"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:16px;height:16px"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </template>
+            </div>
+
+            <!-- dot indicators -->
+            <div v-if="!openItem.gridView && lightboxImages.length > 1" style="display:flex; justify-content:center; gap:6px; padding:10px 20px 0; background:#FFF8EE;">
+              <button
+                v-for="(_, i) in lightboxImages"
+                :key="i"
+                type="button"
+                @click="altIndex = i"
+                :aria-label="`view alt ${i + 1}`"
+                :style="`width:8px; height:8px; border-radius:50%; border:2px solid #211309; cursor:pointer; padding:0; transition:background .15s; background:${i === altIndex ? '#211309' : 'transparent'};`"
+              />
+            </div>
+          </template>
 
           <!-- metadata -->
           <div style="padding:16px 20px 20px; border-top:3px solid #211309; margin-top:10px;">

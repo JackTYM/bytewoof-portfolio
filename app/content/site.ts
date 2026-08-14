@@ -119,6 +119,7 @@ export interface GalleryItem {
   baseCreditUrl?: string
   packUrl?: string      // external pack/product link (e.g. Telegram sticker pack)
   packLabel?: string
+  gridView?: boolean    // browse cover+alts as a click-to-zoom grid instead of a carousel
 }
 
 export const GALLERY: GalleryItem[] = [
@@ -226,6 +227,7 @@ export const GALLERY: GalleryItem[] = [
     baseCreditUrl: 'https://www.etsy.com/shop/Kozke',
     packUrl: 'https://t.me/addstickers/ByteSFW',
     packLabel: 'add pack →',
+    gridView: true,
     alts: [
       { src: `${R2}/byte-sticker-000.webp` },
       { src: `${R2}/byte-sticker-001.webp` },
@@ -300,6 +302,7 @@ export const GALLERY: GalleryItem[] = [
     baseCreditUrl: 'https://x.com/BlooDiddles',
     packUrl: 'https://t.me/addstickers/ByteNSFW',
     packLabel: 'add pack →',
+    gridView: true,
     alts: [
       { src: `${R2}/byte-sticker-nsfw-001.webp` },
       { src: `${R2}/byte-sticker-nsfw-002.webp` },
