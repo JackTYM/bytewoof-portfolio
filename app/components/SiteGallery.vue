@@ -14,7 +14,7 @@ const birthYearInput = ref('')
 const ageError = ref('')
 
 const visibleGallery = computed<GalleryItem[]>(() =>
-  nsfwUnlocked.value ? GALLERY : GALLERY.filter(g => !g.nsfw)
+  (nsfwUnlocked.value ? GALLERY : GALLERY.filter(g => !g.nsfw)).slice().reverse()
 )
 
 const openItem = computed<GalleryItem | null>(() =>
@@ -101,6 +101,10 @@ function hasNsfwAlts(item: GalleryItem) {
   return item.alts?.some(a => a.nsfw)
 }
 
+function visibleAltCount(item: GalleryItem) {
+  return item.alts?.filter(a => !a.nsfw || nsfwUnlocked.value).length ?? 0
+}
+
 onMounted(() => {
   loadLikes()
   try { if (localStorage.getItem('byte.nsfw') === 'verified') nsfwUnlocked.value = true } catch {}
@@ -161,9 +165,9 @@ onMounted(() => {
               style="position:absolute; top:8px; left:8px; font-family:var(--font-mono); font-weight:700; font-size:10px; padding:3px 7px; border:2px solid #5A1F30; border-radius:999px; background:var(--blush-500); color:#5A1F30;"
             >18+</span>
             <span
-              v-if="(item.alts?.length ?? 0) > 0"
+              v-if="visibleAltCount(item) > 0"
               style="position:absolute; bottom:8px; right:8px; font-family:var(--font-mono); font-weight:700; font-size:10px; padding:3px 7px; border:2px solid rgba(33,19,9,.4); border-radius:999px; background:rgba(33,19,9,.55); color:#FFF8EE;"
-            >{{ (item.alts?.filter(a => !a.nsfw || nsfwUnlocked).length ?? 0) + 1 }} alts</span>
+            >{{ visibleAltCount(item) }} alts</span>
           </span>
           <span style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 13px; background:#FFF8EE;">
             <span style="display:flex; flex-direction:column; gap:1px; min-width:0;">
