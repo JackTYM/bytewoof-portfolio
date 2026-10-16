@@ -56,48 +56,47 @@ export const LINKS: SiteLink[] = [
 export interface Project {
   slug: string
   name: string
-  status: 'open sourced' | 'released' | 'moved on'
+  status: 'open source' | 'open sourced' | 'released' | 'moved on' | 'in progress' | 'retired'
   statusColor: string
   description: string
   tags: string[]
   ctaLabel: string
-  href: string // TODO: real value
-  icon: 'bolt' | 'star' | 'soccer'
+  href?: string // omit for projects without a public link
+  icon: 'bolt' | 'chip' | 'gamepad'
 }
 
 export const PROJECTS: Project[] = [
   {
+    slug: 'sogen',
+    name: 'Sogen',
+    status: 'open source',
+    statusColor: 'var(--green-600)',
+    description: 'a windows and linux userspace emulator that runs the real system dlls instead of stubbing apis, with hookable, deterministic, snapshot-able runs. i built its FEX backend for apple silicon (reconciling 16kb host pages with 4kb guest pages), got call of duty: modern warfare 2 running at 60+ fps on both a mac and an iphone, and wrote the ios app that enables jit on non-jailbroken iphones by attaching to itself as a debugger. 42 commits upstream.',
+    tags: ['c++', 'emulation', 'macos', 'ios'],
+    ctaLabel: 'view source',
+    href: 'https://github.com/momo5502/sogen',
+    icon: 'chip',
+  },
+  {
+    slug: 'cemubar',
+    name: 'CemuBar',
+    status: 'in progress',
+    statusColor: 'var(--blue-600)',
+    description: 'a usb dongle that lets a pc drive a real wii u gamepad (screen, audio, buttons, motion) and lets real wiimotes work in cemu. a realtek rtl8720df runs custom freertos firmware that impersonates a wii u console\'s 5ghz wi-fi ap, with modified handshake and association timing. a rust/tauri client captures a window and encodes it with a pure-rust h.264 encoder, streaming ~50-60 fps, with input coming back over a custom usb protocol. reverse-engineered the wireless protocol. still a prototype.',
+    tags: ['c', 'rust', 'freertos', 'reverse engineering'],
+    ctaLabel: '',
+    icon: 'gamepad',
+  },
+  {
     slug: 'marketshark',
     name: 'MarketShark',
-    status: 'open sourced',
-    statusColor: 'var(--green-600)',
+    status: 'retired',
+    statusColor: 'var(--amber-500)',
     description: 'full-stack system for automatic auction flipping in hypixel skyblock in minecraft - a backend server, a java mod, and a native c++ client. my first real business and made me $4k in high school.',
     tags: ['c++', 'minecraft', 'discord'],
     ctaLabel: 'view source',
     href: 'https://github.com/JackTYM/MarketShark',
     icon: 'bolt',
-  },
-  {
-    slug: 'jacksunblockedhub',
-    name: 'JacksUnblockedHub',
-    status: 'released',
-    statusColor: 'var(--blue-600)',
-    description: 'an ultraviolet proxy with built-in games, chat, full websocket support, and automatic wildcard-domain ssl traffic. spread across my whole school district in high school and almost got me suspended.',
-    tags: ['typescript', 'games', 'cybersecurity'],
-    ctaLabel: 'check it out',
-    href: 'https://github.com/JackTYM/JacksUnblockedHub',
-    icon: 'star',
-  },
-  {
-    slug: 'dribble',
-    name: 'Dribble',
-    status: 'moved on',
-    statusColor: 'var(--text-muted)',
-    description: 'soccer analytics platform ingesting live from opta, twitter, and youtube. i co-founded it and have since moved on.',
-    tags: ['web', 'scraping', 'aws'],
-    ctaLabel: 'the story',
-    href: 'https://dribble360.com',
-    icon: 'soccer',
   },
 ]
 
@@ -366,7 +365,7 @@ export interface Con {
   city: string
   venue: string
   blurb: string
-  href: string
+  href?: string // omit for projects without a public link
   accent: string
   accentFg: string
 }
