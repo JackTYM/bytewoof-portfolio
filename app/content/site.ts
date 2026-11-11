@@ -351,6 +351,25 @@ export const GALLERY: GalleryItem[] = [
     creditUrl: 'https://x.com/chirpieboy',
     creditNsfw: true,
   },
+  {
+    slug: 'byte-gameover-ych',
+    src: `${R2}/byte-gameover-ych.webp`,
+    title: 'Game Over YCH',
+    credit: 'MrLaloFox',
+    creditUrl: 'https://x.com/Lalo_Manias',
+    creditNsfw: true,
+    nsfw: true,
+    alts: [{ src: `${R2}/byte-gameover-ych-sticker.webp`, nsfw: true }],
+  },
+  {
+    slug: 'byte-goodboy-ych',
+    src: `${R2}/byte-goodboy-ych.webp`,
+    title: 'Good Boy YCH',
+    credit: 'CoioteZoreiudo',
+    creditUrl: 'https://x.com/CoioteZoreiudo',
+    creditNsfw: true,
+    nsfw: true,
+  },
 ]
 
 // --------------- CONS ---------------
